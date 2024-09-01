@@ -1,1 +1,5 @@
 ols.json
+odinfmt.json
+*.bin
+build
+tests/tests
