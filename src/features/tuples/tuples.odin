@@ -1,4 +1,4 @@
-package features
+package tuples
 
 import "core:math"
 

@@ -3,3 +3,4 @@ odinfmt.json
 *.bin
 build
 tests/tests
+/images/
