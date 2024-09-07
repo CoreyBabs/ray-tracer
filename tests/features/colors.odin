@@ -2,8 +2,7 @@ package test_features
 
 import "core:math"
 import "core:testing"
-import tuples "src:features/tuples"
-
+import "src:features/tuples"
 
 @(test)
 create_color :: proc(t: ^testing.T) {

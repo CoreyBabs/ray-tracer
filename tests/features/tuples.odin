@@ -2,7 +2,8 @@ package test_features
 
 import "core:math"
 import "core:testing"
-import tuples "src:features/tuples"
+import "src:features/tuples"
+import utils "src:utilities"
 
 @(test)
 is_point :: proc(t: ^testing.T) {
@@ -34,9 +35,9 @@ create_vector :: proc(t: ^testing.T) {
 
 @(test)
 floating_point_comparison :: proc(t: ^testing.T) {
-	testing.expect(t, tuples.fp_equals(1.2345, 1.2345), "floats are considered not equal")
-	testing.expect(t, tuples.fp_equals(1.000001, 1.0), "close floats are considered not equal")
-	testing.expect(t, !tuples.fp_equals(1.1, 1.0), "far floats are equal")
+	testing.expect(t, utils.fp_equals(1.2345, 1.2345), "floats are considered not equal")
+	testing.expect(t, utils.fp_equals(1.000001, 1.0), "close floats are considered not equal")
+	testing.expect(t, !utils.fp_equals(1.1, 1.0), "far floats are equal")
 }
 
 @(test)
@@ -137,7 +138,7 @@ normalize_vector :: proc(t: ^testing.T) {
 	mag := tuples.magnitude(norm)
 	em : f32 = 1
 	testing.expect(t, norm == expected, "norm failed")
-	testing.expectf(t, tuples.fp_equals(em, mag), "norm magnitude failed, expected %f, got %f", em, mag)
+	testing.expectf(t, utils.fp_equals(em, mag), "norm magnitude failed, expected %f, got %f", em, mag)
 
 }
 

@@ -2,7 +2,7 @@ package main
 
 import "core:fmt"
 import "core:math"
-import "core:strconv"
+import "core:math/linalg"
 import "core:strings"
 import "features/tuples"
 import "features/canvas"

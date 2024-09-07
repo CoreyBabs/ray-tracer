@@ -1,5 +1,6 @@
 package tuples
 
+import utils "src:utilities"
 
 Color :: [3]f32
 
@@ -24,5 +25,5 @@ color_multiply :: proc(a, b: Color) -> Color {
 }
 
 color_equals :: proc(a, b: Color) -> bool {
-	return fp_equals(a.r, b.r) && fp_equals(a.g, b.g) && fp_equals(a.b, b.b)
+	return utils.fp_equals(a.r, b.r) && utils.fp_equals(a.g, b.g) && utils.fp_equals(a.b, b.b)
 }

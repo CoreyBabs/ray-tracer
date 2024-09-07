@@ -1,10 +1,9 @@
 package tuples
 
 import "core:math"
+import utils "src:utilities"
 
 Tuple :: [4]f32
-
-EPS :: 0.00001
 
 is_point :: proc(t: Tuple) -> bool {
 	return t.w == 1.0
@@ -72,13 +71,5 @@ cross :: proc(a, b: Tuple) -> Tuple {
 }
 
 tuple_equals :: proc(a, b: Tuple) -> bool {
-	return fp_equals(a.x, b.x) && fp_equals(a.y, b.y) && fp_equals(a.z, b.z) && fp_equals(a.w, b.w)
-}
-/*
-Book recommends doing this manually, but not sure if this is needed in odin
-This should also probably be moved to a utility package or something like that
-as it does not really belong with tuples
-*/
-fp_equals :: proc(a, b: f32) -> bool {
-	return math.abs(a - b) < EPS
+	return utils.fp_equals(a.x, b.x) && utils.fp_equals(a.y, b.y) && utils.fp_equals(a.z, b.z) && utils.fp_equals(a.w, b.w)
 }
