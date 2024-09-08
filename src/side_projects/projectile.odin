@@ -25,7 +25,7 @@ tick :: proc(env: Environment, proj: Projectile) -> Projectile {
 	return Projectile{new_position, new_velocity}
 }
 
-run :: proc() {
+projectile :: proc() {
 	position := tuples.point(0, 1, 0)
 	velocity := tuples.vector(1, 1.8, 0)
 	velocity = tuples.normalize(velocity)

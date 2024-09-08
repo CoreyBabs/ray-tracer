@@ -26,3 +26,14 @@ matrix4_equals_f32 :: proc(a, b: matrix[4,4]f32) -> bool {
 matrix4_can_invert :: proc(a: matrix[4,4]f32) -> bool {
 	return linalg.determinant(a) != 0
 }
+
+matrix4_identity :: proc() -> matrix[4,4]f32 {
+	identity := matrix[4, 4]f32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
+
+	return identity
+}
