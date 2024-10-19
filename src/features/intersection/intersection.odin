@@ -1,6 +1,7 @@
 package intersection
 
 import "core:math"
+import "core:math/linalg"
 import "src:features/rays"
 import "src:features/sphere"
 import "src:features/tuples"
@@ -27,10 +28,11 @@ aggregate_intersections :: proc(intersections: ..Intersection) -> [dynamic]Inter
 }
 
 intersect :: proc(sphere: sphere.Sphere, ray: rays.Ray) -> [dynamic]Intersection {
-	sphere_to_ray := tuples.subtract_tuples(ray.origin, sphere.center)
+	transformed_ray := rays.transform(ray, linalg.inverse(sphere.transform))
+	sphere_to_ray := tuples.subtract_tuples(transformed_ray.origin, sphere.center)
 
-	a := tuples.dot(ray.direction, ray.direction)
-	b := 2 * tuples.dot(ray.direction, sphere_to_ray)
+	a := tuples.dot(transformed_ray.direction, transformed_ray.direction)
+	b := 2 * tuples.dot(transformed_ray.direction, sphere_to_ray)
 	c := tuples.dot(sphere_to_ray, sphere_to_ray) - 1
 
 	test := math.pow(b, 2)

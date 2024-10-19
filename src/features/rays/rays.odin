@@ -1,5 +1,6 @@
 package rays
 
+import "src:features/transforms"
 import "src:features/tuples"
 
 Ray :: struct {
@@ -16,3 +17,8 @@ position :: proc(ray: Ray, t: f32) -> tuples.Tuple {
 	return tuples.add_tuples(ray.origin, velocity)
 }
 
+transform :: proc(ray: Ray, transform: matrix[4, 4]f32) -> Ray {
+	origin := transform * ray.origin
+	direction := transform * ray.direction
+	return Ray{origin, direction}
+}

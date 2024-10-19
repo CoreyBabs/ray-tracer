@@ -4,6 +4,7 @@ import "core:testing"
 import "src:features/intersection"
 import "src:features/rays"
 import "src:features/sphere"
+import "src:features/transforms"
 import "src:features/tuples"
 import utils "src:utilities"
 
@@ -166,4 +167,49 @@ hit_test_many :: proc(t: ^testing.T) {
 	testing.expect(t, intersection.intersection_equals(hit, i4), "Hit was not correct.")
 }
 
+@(test)
+sphere_default_transform :: proc(t: ^testing.T) {
+	s := sphere.sphere()
+	testing.expect(t, utils.matrix4_equals_f32(s.transform, utils.matrix4_identity()), "Default Sphere transform is incorrect.")
+}
 
+@(test)
+sphere_change_transform :: proc(t: ^testing.T) {
+	s := sphere.sphere()
+	translate := transforms.get_translation_matrix(2, 3, 4)
+	sphere.set_transform(&s, translate)
+
+	testing.expect(t, utils.matrix4_equals_f32(s.transform, translate), "Sphere transform is incorrect.")
+}
+
+@(test)
+scaled_intersection :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, -5)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	transform := transforms.get_scale_matrix(2, 2, 2)
+	sphere.set_transform(&s, transform)
+
+	xs := intersection.intersect(s, r)
+	defer delete(xs)
+
+	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
+	testing.expectf(t, utils.fp_equals(xs[0].t, 3), "First intersection t does not match. Got %f", xs[0].t)
+	testing.expectf(t, utils.fp_equals(xs[1].t, 7), "Second intersection t does not match. Got %f", xs[1].t)
+}
+
+@(test)
+translated_intersection :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, -5)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	transform := transforms.get_translation_matrix(5, 5, 5)
+	sphere.set_transform(&s, transform)
+
+	xs := intersection.intersect(s, r)
+	defer delete(xs)
+
+	testing.expect(t, len(xs) == 0, "Intersection count does not match.")
+}
