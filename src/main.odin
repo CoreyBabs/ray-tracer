@@ -9,5 +9,5 @@ import "features/canvas"
 import "side_projects"
 
 main :: proc() {
-	side_projects.clock()
+	side_projects.circle()
 }
