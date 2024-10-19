@@ -70,6 +70,10 @@ cross :: proc(a, b: Tuple) -> Tuple {
 	return vector(x, y, z)
 }
 
+reflect :: proc(v, n: Tuple) -> Tuple {
+	return v - n * 2 * dot(v, n)
+}
+
 tuple_equals :: proc(a, b: Tuple) -> bool {
 	return utils.fp_equals(a.x, b.x) && utils.fp_equals(a.y, b.y) && utils.fp_equals(a.z, b.z) && utils.fp_equals(a.w, b.w)
 }

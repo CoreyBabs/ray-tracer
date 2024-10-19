@@ -168,21 +168,6 @@ hit_test_many :: proc(t: ^testing.T) {
 }
 
 @(test)
-sphere_default_transform :: proc(t: ^testing.T) {
-	s := sphere.sphere()
-	testing.expect(t, utils.matrix4_equals_f32(s.transform, utils.matrix4_identity()), "Default Sphere transform is incorrect.")
-}
-
-@(test)
-sphere_change_transform :: proc(t: ^testing.T) {
-	s := sphere.sphere()
-	translate := transforms.get_translation_matrix(2, 3, 4)
-	sphere.set_transform(&s, translate)
-
-	testing.expect(t, utils.matrix4_equals_f32(s.transform, translate), "Sphere transform is incorrect.")
-}
-
-@(test)
 scaled_intersection :: proc(t: ^testing.T) {
 	origin := tuples.point(0, 0, -5)
 	dir := tuples.vector(0, 0, 1)

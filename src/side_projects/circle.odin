@@ -5,6 +5,7 @@ import "core:os"
 import "src:features/tuples"
 import "src:features/canvas"
 import "src:features/intersection"
+import "src:features/light"
 import "src:features/transforms"
 import "src:features/sphere"
 import "src:features/rays"
@@ -13,10 +14,17 @@ circle :: proc() {
 	canvas_pixels := 100
 	c := canvas.canvas(canvas_pixels, canvas_pixels)
 	defer canvas.free_canvas(&c)
-	color := tuples.color(255, 0, 0)
 
 	s := sphere.sphere()
+	m := light.material(0.5, 0.9, 0.1)
+	light.set_material_color(&m, tuples.color(0.5, 0.2, 1))
+	sphere.set_material(&s, m)
+
+	light_position := tuples.point(5, 10, -10)
+	light_color := tuples.color(1, 1, 1)
+	l := light.point_light(light_position, light_color)
 	// transform := transforms.get_shear_matrix(1, 0, 0, 0, 0, 1) * transforms.get_scale_matrix(0.5, 1, 1)
+	// transform := transforms.get_scale_matrix(0.5, 1, 1)
 	// sphere.set_transform(&s, transform)
 
 
@@ -38,6 +46,10 @@ circle :: proc() {
 			
 			hit, found := intersection.hit(xs)
 			if found {
+				point := rays.position(r, hit.t)
+				normal := sphere.normal_at(hit.sphere, point)
+				eye := -r.direction
+				color := light.lighting(hit.sphere.material, l, point, eye, normal)
 				canvas.write_pixel(&c, x, y, color)
 			}
 			

@@ -162,3 +162,24 @@ cross_product :: proc(t: ^testing.T) {
 	testing.expect(t, tuples.tuple_equals(result, expected))
 	testing.expect(t, tuples.tuple_equals(reverse, reverse_expected))
 }
+
+@(test)
+reflect_45 :: proc(t: ^testing.T) {
+	v := tuples.vector(1, -1, 0)
+	n := tuples.vector(0, 1, 0)
+	r := tuples.reflect(v, n)
+
+	expected_r := tuples.vector(1, 1, 0)
+	testing.expect(t, tuples.tuple_equals(r, expected_r), "45 degree reflection is not correct.")
+}
+
+@(test)
+reflect_slant :: proc(t: ^testing.T) {
+	a := math.sqrt_f32(2) / 2
+	v := tuples.vector(0, -1, 0)
+	n := tuples.vector(a, a, 0)
+	r := tuples.reflect(v, n)
+
+	expected_r := tuples.vector(1, 0, 0)
+	testing.expect(t, tuples.tuple_equals(r, expected_r), "Slanted reflection is not correct.")
+}
