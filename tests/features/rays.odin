@@ -21,10 +21,10 @@ ray_position :: proc(t: ^testing.T) {
 	direction := tuples.vector(1, 0, 0)
 	ray := rays.create_ray(origin, direction)
 
-	testing.expect(t, tuples.tuple_equals(rays.position(ray, 0), tuples.point(2, 3, 4)), "Ray position is incorrect.")
-	testing.expect(t, tuples.tuple_equals(rays.position(ray, 1), tuples.point(3, 3, 4)), "Ray position is incorrect.")
-	testing.expect(t, tuples.tuple_equals(rays.position(ray, -1), tuples.point(1, 3, 4)), "Ray position is incorrect.")
-	testing.expect(t, tuples.tuple_equals(rays.position(ray, 2.5), tuples.point(4.5, 3, 4)), "Ray position is incorrect.")
+	testing.expect(t, tuples.tuple_equals(rays.position(&ray, 0), tuples.point(2, 3, 4)), "Ray position is incorrect.")
+	testing.expect(t, tuples.tuple_equals(rays.position(&ray, 1), tuples.point(3, 3, 4)), "Ray position is incorrect.")
+	testing.expect(t, tuples.tuple_equals(rays.position(&ray, -1), tuples.point(1, 3, 4)), "Ray position is incorrect.")
+	testing.expect(t, tuples.tuple_equals(rays.position(&ray, 2.5), tuples.point(4.5, 3, 4)), "Ray position is incorrect.")
 }
 
 @(test)
@@ -34,7 +34,7 @@ ray_translate :: proc(t: ^testing.T) {
 	ray := rays.create_ray(origin, direction)
 
 	transform := transforms.get_translation_matrix(3, 4, 5)
-	r2 := rays.transform(ray, transform)
+	r2 := rays.transform(&ray, transform)
 
 	expected_origin := tuples.point(4, 6, 8)
 	expected_direction := tuples.vector(0, 1, 0)
@@ -50,7 +50,7 @@ ray_scale :: proc(t: ^testing.T) {
 	ray := rays.create_ray(origin, direction)
 
 	transform := transforms.get_scale_matrix(2, 3, 4)
-	r2 := rays.transform(ray, transform)
+	r2 := rays.transform(&ray, transform)
 
 	expected_origin := tuples.point(2, 6, 12)
 	expected_direction := tuples.vector(0, 3, 0)

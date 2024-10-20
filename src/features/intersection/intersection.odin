@@ -27,7 +27,7 @@ aggregate_intersections :: proc(intersections: ..Intersection) -> [dynamic]Inter
 	return aggregate
 }
 
-intersect :: proc(sphere: sphere.Sphere, ray: rays.Ray) -> [dynamic]Intersection {
+intersect :: proc(sphere: ^sphere.Sphere, ray: ^rays.Ray) -> [dynamic]Intersection {
 	transformed_ray := rays.transform(ray, linalg.inverse(sphere.transform))
 	sphere_to_ray := tuples.subtract_tuples(transformed_ray.origin, sphere.center)
 
@@ -46,8 +46,8 @@ intersect :: proc(sphere: sphere.Sphere, ray: rays.Ray) -> [dynamic]Intersection
 	t1 := (-b - math.sqrt(discriminant)) / (2 * a)
 	t2 := (-b + math.sqrt(discriminant)) / (2 * a)
 
-	i1 := intersection(t1, sphere)
-	i2 := intersection(t2, sphere)
+	i1 := intersection(t1, sphere^)
+	i2 := intersection(t2, sphere^)
 	
 	return aggregate_intersections(i1, i2)
 }

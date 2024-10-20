@@ -18,7 +18,8 @@ sphere :: proc() -> Sphere {
 }
 
 sphere_equals :: proc(s1, s2: Sphere) -> bool {
-	return s1.radius == s2.radius && tuples.tuple_equals(s1.center, s2.center)
+	return s1.radius == s2.radius && tuples.tuple_equals(s1.center, s2.center) &&
+		utils.matrix4_equals_f32(s1.transform, s2.transform) && light.material_equals(s1.material, s2.material)
 }
 
 set_transform :: proc(s: ^Sphere, t: matrix[4,4]f32) {
@@ -29,7 +30,7 @@ set_material :: proc(s: ^Sphere, m: light.Material) {
 	s.material = m
 }
 
-normal_at :: proc(s: Sphere, p: tuples.Tuple) -> tuples.Tuple {
+normal_at :: proc(s: ^Sphere, p: tuples.Tuple) -> tuples.Tuple {
 	obj_p := linalg.inverse(s.transform) * p
 	n := tuples.subtract_tuples(obj_p, s.center)
 	wn := linalg.transpose(linalg.inverse(s.transform)) * n

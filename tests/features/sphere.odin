@@ -27,7 +27,7 @@ sphere_change_transform :: proc(t: ^testing.T) {
 normal_x :: proc(t: ^testing.T) {
 	s := sphere.sphere()
 	p := tuples.point(1, 0, 0)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(1, 0, 0)
 
@@ -38,7 +38,7 @@ normal_x :: proc(t: ^testing.T) {
 normal_y :: proc(t: ^testing.T) {
 	s := sphere.sphere()
 	p := tuples.point(0, 1, 0)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(0, 1, 0)
 
@@ -49,7 +49,7 @@ normal_y :: proc(t: ^testing.T) {
 normal_z :: proc(t: ^testing.T) {
 	s := sphere.sphere()
 	p := tuples.point(0, 0, 1)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(0, 0, 1)
 
@@ -61,7 +61,7 @@ normal_nonaxial :: proc(t: ^testing.T) {
 	a := math.sqrt_f32(3) / 3
 	s := sphere.sphere()
 	p := tuples.point(a, a, a)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(a, a, a)
 
@@ -73,7 +73,7 @@ normal_normalized :: proc(t: ^testing.T) {
 	a := math.sqrt_f32(3) / 3
 	s := sphere.sphere()
 	p := tuples.point(a, a, a)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.normalize(tuples.vector(a, a, a))
 
@@ -86,7 +86,7 @@ normal_translated :: proc(t: ^testing.T) {
 	transform := transforms.get_translation_matrix(0, 1, 0)
 	sphere.set_transform(&s, transform)
 	p := tuples.point(0, 1.70711, -0.70711)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(0, 0.70711, -0.70711)
 
@@ -100,7 +100,7 @@ normal_transformed :: proc(t: ^testing.T) {
 	transform := transforms.get_scale_matrix(1, 0.5, 1) * transforms.get_rotation_matrix(math.PI / 5, .Z)
 	sphere.set_transform(&s, transform)
 	p := tuples.point(0, a, -a)
-	n := sphere.normal_at(s, p)
+	n := sphere.normal_at(&s, p)
 
 	expected_n := tuples.vector(0, 0.97014, -0.24254)
 

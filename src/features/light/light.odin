@@ -13,8 +13,8 @@ point_light :: proc(p: tuples.Tuple, i: tuples.Color) -> Light {
 }
 
 lighting :: proc(
-	m: Material,
-	l: Light,
+	m: ^Material,
+	l: ^Light,
 	p: tuples.Tuple,
 	eyev: tuples.Tuple,
 	n: tuples.Tuple) -> tuples.Color {

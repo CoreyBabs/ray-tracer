@@ -41,15 +41,15 @@ circle :: proc() {
 			position := tuples.point(world_x, world_y, wall_z)
 
 			r := rays.create_ray(origin, tuples.normalize(position - origin))
-			xs := intersection.intersect(s, r)
+			xs := intersection.intersect(&s, &r)
 			defer delete(xs)
 			
 			hit, found := intersection.hit(xs)
 			if found {
-				point := rays.position(r, hit.t)
-				normal := sphere.normal_at(hit.sphere, point)
+				point := rays.position(&r, hit.t)
+				normal := sphere.normal_at(&hit.sphere, point)
 				eye := -r.direction
-				color := light.lighting(hit.sphere.material, l, point, eye, normal)
+				color := light.lighting(&hit.sphere.material, &l, point, eye, normal)
 				canvas.write_pixel(&c, x, y, color)
 			}
 			

@@ -37,7 +37,7 @@ test_intersection :: proc(t: ^testing.T) {
 	direction := tuples.vector(0, 0, 1)
 	ray := rays.create_ray(origin, direction)
 	s := sphere.sphere()
-	xs := intersection.intersect(s, ray)
+	xs := intersection.intersect(&s, &ray)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -51,7 +51,7 @@ test_intersection_tangent :: proc(t: ^testing.T) {
 	direction := tuples.vector(0, 0, 1)
 	ray := rays.create_ray(origin, direction)
 	s := sphere.sphere()
-	xs := intersection.intersect(s, ray)
+	xs := intersection.intersect(&s, &ray)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -65,7 +65,7 @@ test_intersection_miss :: proc(t: ^testing.T) {
 	direction := tuples.vector(0, 0, 1)
 	ray := rays.create_ray(origin, direction)
 	s := sphere.sphere()
-	xs := intersection.intersect(s, ray)
+	xs := intersection.intersect(&s, &ray)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 0, "Intersection count does not match.")
@@ -77,7 +77,7 @@ test_intersection_inside :: proc(t: ^testing.T) {
 	direction := tuples.vector(0, 0, 1)
 	ray := rays.create_ray(origin, direction)
 	s := sphere.sphere()
-	xs := intersection.intersect(s, ray)
+	xs := intersection.intersect(&s, &ray)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -91,7 +91,7 @@ test_intersection_behind :: proc(t: ^testing.T) {
 	direction := tuples.vector(0, 0, 1)
 	ray := rays.create_ray(origin, direction)
 	s := sphere.sphere()
-	xs := intersection.intersect(s, ray)
+	xs := intersection.intersect(&s, &ray)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -106,7 +106,7 @@ intersection_spheres :: proc(t: ^testing.T) {
 	r := rays.create_ray(origin, dir)
 	s := sphere.sphere()
 
-	xs := intersection.intersect(s, r)
+	xs := intersection.intersect(&s, &r)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -176,7 +176,7 @@ scaled_intersection :: proc(t: ^testing.T) {
 	transform := transforms.get_scale_matrix(2, 2, 2)
 	sphere.set_transform(&s, transform)
 
-	xs := intersection.intersect(s, r)
+	xs := intersection.intersect(&s, &r)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 2, "Intersection count does not match.")
@@ -193,8 +193,52 @@ translated_intersection :: proc(t: ^testing.T) {
 	transform := transforms.get_translation_matrix(5, 5, 5)
 	sphere.set_transform(&s, transform)
 
-	xs := intersection.intersect(s, r)
+	xs := intersection.intersect(&s, &r)
 	defer delete(xs)
 
 	testing.expect(t, len(xs) == 0, "Intersection count does not match.")
+}
+
+@(test)
+precompute :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, -5)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	i1 := intersection.intersection(4, s)
+
+	precomp := intersection.prepare_computation(&i1, &r)
+
+	testing.expect(t, utils.fp_equals(precomp.t, i1.t), "Precomputed t is not correct.")
+	testing.expect(t, sphere.sphere_equals(precomp.object, i1.sphere), "Precomputed object is not correct.")
+	testing.expect(t, tuples.tuple_equals(precomp.point, tuples.point(0, 0, -1)), "Precomputed point is not correct.")
+	testing.expectf(t, tuples.tuple_equals(precomp.eyev, tuples.vector(0, 0, -1)), "Precomputed eyev is not correct. Got %v", precomp.eyev)
+	testing.expect(t, tuples.tuple_equals(precomp.normalv, tuples.vector(0, 0, -1)), "Precomputed normalv is not correct.")
+}
+
+@(test)
+outside_hit :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, -5)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	i1 := intersection.intersection(4, s)
+
+	precomp := intersection.prepare_computation(&i1, &r)
+	testing.expect(t, !precomp.inside, "Precomputed inside is not correct.")
+}
+
+@(test)
+inside_hit :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, 0)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	i1 := intersection.intersection(1, s)
+
+	precomp := intersection.prepare_computation(&i1, &r)
+	testing.expect(t, precomp.inside, "Precomputed inside is not correct.")
+	testing.expect(t, tuples.tuple_equals(precomp.point, tuples.point(0, 0, 1)), "Precomputed point is not correct.")
+	testing.expectf(t, tuples.tuple_equals(precomp.eyev, tuples.vector(0, 0, -1)), "Precomputed eyev is not correct. Got %v", precomp.eyev)
+	testing.expect(t, tuples.tuple_equals(precomp.normalv, tuples.vector(0, 0, -1)), "Precomputed normalv is not correct.")
 }

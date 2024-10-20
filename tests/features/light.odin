@@ -36,7 +36,7 @@ eye_between_light_and_surface :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
-	result := light.lighting(m, l, p, eyev, n)
+	result := light.lighting(&m, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(1.9, 1.9, 1.9)), "Lighting is incorrect.")
 }
@@ -50,7 +50,7 @@ eye_offset_by_45_degrees :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
-	result := light.lighting(m, l, p, eyev, n)
+	result := light.lighting(&m, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(1.0, 1.0, 1.0)), "Lighting is incorrect.")
 }
@@ -63,7 +63,7 @@ light_offset_by_45_degrees :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 10, -10), tuples.color(1, 1, 1))
-	result := light.lighting(m, l, p, eyev, n)
+	result := light.lighting(&m, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(0.7364, 0.7364, 0.7364)), "Lighting is incorrect.")
 }
@@ -77,7 +77,7 @@ eye_in_reflection_path :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, -a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 10, -10), tuples.color(1, 1, 1))
-	result := light.lighting(m, l, p, eyev, n)
+	result := light.lighting(&m, &l, p, eyev, n)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(1.63638, 1.63638, 1.63638)), "Lighting is incorrect. Got: %v", result)
 }
@@ -90,7 +90,7 @@ light_behind_surface :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l := light.point_light(tuples.point(0, 0, 10), tuples.color(1, 1, 1))
-	result := light.lighting(m, l, p, eyev, n)
+	result := light.lighting(&m, &l, p, eyev, n)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(0.1, 0.1, 0.1)), "Lighting is incorrect. Got: %v", result)
 }
