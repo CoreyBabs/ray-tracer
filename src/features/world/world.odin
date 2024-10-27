@@ -17,6 +17,21 @@ empty_world :: proc() -> World {
 	return World{nil, light.Light{}}
 }
 
+
+set_light :: proc(w: ^World, l: light.Light) {
+	w.light = l
+}
+
+add_object :: proc(w: ^World, s: sphere.Sphere) {
+	if w.objects == nil {
+		w.objects = make([dynamic]sphere.Sphere, 1)
+		w.objects[0] = s
+	}
+	else {
+		append(&w.objects, s)
+	}
+}
+
 default_world :: proc() -> World {
 	l := light.point_light(tuples.point(-10, 10, -10), tuples.color(1, 1, 1))
 	s1 := sphere.sphere()
@@ -74,6 +89,8 @@ contains_object :: proc(w: ^World, s: ^sphere.Sphere) -> bool {
 
 	return false
 }
+
+
 
 delete_world :: proc(w: ^World) {
 	delete(w.objects)

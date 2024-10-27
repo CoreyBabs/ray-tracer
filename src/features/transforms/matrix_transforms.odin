@@ -93,6 +93,24 @@ get_shear_matrix :: proc(xy, xz, yx, yz, zx, zy: f32) -> matrix[4,4]f32 {
 	return transform
 }
 
+get_view_transform :: proc(from, to, up: tuples.Tuple) -> matrix[4,4]f32 {
+	// upn := tuples.normalize(up)
+	// return linalg.matrix4_look_at_f32(from.xyz, to.xyz, upn.xyz) * get_translation_matrix(-from.x, -from.y, -from.z)
+	f := tuples.normalize(to - from)
+	upn := tuples.normalize(up)
+	left := tuples.cross(f, upn)
+	true_up := tuples.cross(left, f)
+
+	orientation := matrix[4,4]f32{
+		left.x, left.y, left.z, 0,
+		true_up.x, true_up.y, true_up.z, 0,
+		-f.x, -f.y, -f.z, 0,
+		0, 0, 0, 1
+	}
+
+	return orientation * get_translation_matrix(-from.x, -from.y, -from.z)
+}
+
 @(private)
 get_rotation_v :: proc(dir: RotationDir) -> [3]f32 {
 	v: [3]f32

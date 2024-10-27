@@ -129,3 +129,57 @@ chaining_transforms :: proc(t: ^testing.T) {
 	expected = tuples.point(15, 0, 7)
 	testing.expectf(t, tuples.tuple_equals(result, expected), "got %v, expected %v", result, expected)
 }
+
+@(test)
+default_orientation :: proc(t: ^testing.T) {
+	from := tuples.point(0, 0, 0)
+	to := tuples.point(0, 0, -1)
+	up := tuples.vector(0, 1, 0)
+
+	view := transforms.get_view_transform(from, to, up)
+
+	testing.expect(t, utils.matrix4_equals_f32(view, utils.matrix4_identity()), "Default orientation was not the identity matrix.")
+}
+
+@(test)
+view_positive_z :: proc(t: ^testing.T) {
+	from := tuples.point(0, 0, 0)
+	to := tuples.point(0, 0, 1)
+	up := tuples.vector(0, 1, 0)
+
+	view := transforms.get_view_transform(from, to, up)
+	expected := transforms.get_scale_matrix(-1, 1, -1)
+
+	testing.expect(t, utils.matrix4_equals_f32(view, expected), "Positive z view is incorrect.")
+}
+
+@(test)
+view_moves_world :: proc(t: ^testing.T) {
+	from := tuples.point(0, 0, 8)
+	to := tuples.point(0, 0, 0)
+	up := tuples.vector(0, 1, 0)
+
+	view := transforms.get_view_transform(from, to, up)
+	expected := transforms.get_translation_matrix(0, 0, -8)
+
+	testing.expect(t, utils.matrix4_equals_f32(view, expected), "View moves world transform is incorrect.")
+
+}
+
+@(test)
+arbitrary_view :: proc(t: ^testing.T) {
+	from := tuples.point(1, 3, 2)
+	to := tuples.point(4, -2, 8)
+	up := tuples.vector(1, 1, 0)
+
+	view := transforms.get_view_transform(from, to, up)
+	expected := matrix[4, 4]f32{
+		-0.50709, 0.50709, 0.67612, -2.36643,
+		0.76772, 0.60609, 0.12122, -2.82843,
+		-0.35857, 0.59761, -0.71714, 0,
+		0, 0, 0, 1,
+	}
+
+	testing.expectf(t, utils.matrix4_equals_f32(view, expected), "Arbitrary view is incorrect. Got: %v", view)
+
+}
