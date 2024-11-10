@@ -46,7 +46,7 @@ eye_offset_by_45_degrees :: proc(t: ^testing.T) {
 	m := light.material()
 	p := tuples.point(0, 0, 0)
 
-	a := math.sqrt_f32(2) / 2
+	a := math.sqrt_f64(2) / 2
 	eyev := tuples.vector(0, a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
@@ -73,13 +73,13 @@ eye_in_reflection_path :: proc(t: ^testing.T) {
 	m := light.material()
 	p := tuples.point(0, 0, 0)
 
-	a := math.sqrt_f32(2) / 2
+	a := math.sqrt_f64(2) / 2
 	eyev := tuples.vector(0, -a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 10, -10), tuples.color(1, 1, 1))
 	result := light.lighting(&m, &l, p, eyev, n)
 
-	testing.expectf(t, tuples.color_equals(result, tuples.color(1.63638, 1.63638, 1.63638)), "Lighting is incorrect. Got: %v", result)
+	testing.expectf(t, tuples.color_equals(result, tuples.color(1.6364, 1.6364, 1.6364)), "Lighting is incorrect. Got: %v", result)
 }
 
 @(test)
@@ -91,6 +91,19 @@ light_behind_surface :: proc(t: ^testing.T) {
 	n := tuples.vector(0, 0, -1)
 	l := light.point_light(tuples.point(0, 0, 10), tuples.color(1, 1, 1))
 	result := light.lighting(&m, &l, p, eyev, n)
+
+	testing.expectf(t, tuples.color_equals(result, tuples.color(0.1, 0.1, 0.1)), "Lighting is incorrect. Got: %v", result)
+}
+
+@(test)
+point_in_shadow :: proc(t: ^testing.T) {
+	m := light.material()
+	p := tuples.point(0, 0, 0)
+
+	eyev := tuples.vector(0, 0, -1)
+	n := tuples.vector(0, 0, -1)
+	l := light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
+	result := light.lighting(&m, &l, p, eyev, n, true)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(0.1, 0.1, 0.1)), "Lighting is incorrect. Got: %v", result)
 }

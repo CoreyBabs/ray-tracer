@@ -101,8 +101,8 @@ ppm_body :: proc(builder: ^strings.Builder, canvas: ^Canvas) {
 }
 
 @(private)
-clamp_component_and_covert_to_string :: proc(value: f32) -> (int, string) {
-	v : int = auto_cast math.round_f32(math.clamp(value * 255, 0, 255))
+clamp_component_and_covert_to_string :: proc(value: f64) -> (int, string) {
+	v : int = auto_cast math.round_f64(math.clamp(value * 255, 0, 255))
 	
 	buf: [4]byte
 	result := strconv.itoa(buf[:], v)

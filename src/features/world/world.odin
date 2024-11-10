@@ -64,7 +64,8 @@ intersect_world :: proc(w: ^World, ray: ^rays.Ray) -> [dynamic]intersection.Inte
 }
 
 shade_hit :: proc(w: ^World, comps: ^intersection.Precompute) -> tuples.Color {
-	return light.lighting(&comps.object.material, &w.light, comps.point, comps.eyev, comps.normalv)
+	in_shadow := is_shadowed(w, &comps.over_point)
+	return light.lighting(&comps.object.material, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
 }
 
 color_at :: proc(w: ^World, ray: ^rays.Ray) -> tuples.Color {
@@ -90,7 +91,18 @@ contains_object :: proc(w: ^World, s: ^sphere.Sphere) -> bool {
 	return false
 }
 
+is_shadowed :: proc(w: ^World, p: ^tuples.Tuple) -> bool {
+	v := tuples.subtract_tuples(w.light.position, p^)
+	distance := tuples.magnitude(v)
+	direction := tuples.normalize(v)
+	ray := rays.create_ray(p^, direction)
 
+	intersections := intersect_world(w, &ray)
+	defer delete(intersections)
+
+	hit, found := intersection.hit(intersections)
+	return found && hit.t < distance
+}
 
 delete_world :: proc(w: ^World) {
 	delete(w.objects)

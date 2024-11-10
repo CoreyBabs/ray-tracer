@@ -17,12 +17,18 @@ lighting :: proc(
 	l: ^Light,
 	p: tuples.Tuple,
 	eyev: tuples.Tuple,
-	n: tuples.Tuple) -> tuples.Color {
+	n: tuples.Tuple,
+	in_shadow := false) -> tuples.Color {
 
 	effective_color := m.color * l.intensity
 
 	lv := tuples.normalize(l.position - p)
 	ambient := effective_color * m.ambient
+
+	if in_shadow {
+		return ambient
+	}
+
 	diffuse := tuples.color(0, 0, 0)
 	specular := tuples.color(0, 0, 0)
 	light_dot_normal := tuples.dot(lv, n)

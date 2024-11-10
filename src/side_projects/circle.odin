@@ -22,7 +22,7 @@ circle :: proc() {
 	light_color := tuples.color(1, 1, 1)
 	l := light.point_light(light_position, light_color)
 
-	cam := camera.camera(100, 100, math.PI / 3)
+	cam := camera.camera(500, 500, math.PI / 3)
 	view := transforms.get_view_transform(tuples.point(0, 1.5, -5), tuples.point(0, 1, 0), tuples.vector(0, 1, 0))
 	camera.set_transform(&cam, view)
 

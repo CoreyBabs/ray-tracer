@@ -8,11 +8,11 @@ import "src:features/tuples"
 import utils "src:utilities"
 
 Intersection :: struct {
-	t: f32,
+	t: f64,
 	sphere: sphere.Sphere
 }
 
-intersection :: proc(t: f32, sphere: sphere.Sphere) -> Intersection {
+intersection :: proc(t: f64, sphere: sphere.Sphere) -> Intersection {
 	return Intersection{t, sphere}
 }
 
@@ -28,7 +28,7 @@ aggregate_intersections :: proc(intersections: ..Intersection) -> [dynamic]Inter
 }
 
 intersect :: proc(sphere: ^sphere.Sphere, ray: ^rays.Ray) -> [dynamic]Intersection {
-	transformed_ray := rays.transform(ray, linalg.inverse(sphere.transform))
+	transformed_ray := rays.transform(ray, linalg.matrix4_inverse_f64(sphere.transform))
 	sphere_to_ray := tuples.subtract_tuples(transformed_ray.origin, sphere.center)
 
 	a := tuples.dot(transformed_ray.direction, transformed_ray.direction)

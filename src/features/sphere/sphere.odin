@@ -7,9 +7,9 @@ import "src:features/tuples"
 import utils "src:utilities"
 
 Sphere :: struct {
-	radius: f32,
+	radius: f64,
 	center: tuples.Tuple,
-	transform: matrix[4,4]f32,
+	transform: matrix[4,4]f64,
 	material: light.Material
 }
 
@@ -19,10 +19,10 @@ sphere :: proc() -> Sphere {
 
 sphere_equals :: proc(s1, s2: Sphere) -> bool {
 	return s1.radius == s2.radius && tuples.tuple_equals(s1.center, s2.center) &&
-		utils.matrix4_equals_f32(s1.transform, s2.transform) && light.material_equals(s1.material, s2.material)
+		utils.matrix4_equals_f64(s1.transform, s2.transform) && light.material_equals(s1.material, s2.material)
 }
 
-set_transform :: proc(s: ^Sphere, t: matrix[4,4]f32) {
+set_transform :: proc(s: ^Sphere, t: matrix[4,4]f64) {
 	s.transform = t
 }
 

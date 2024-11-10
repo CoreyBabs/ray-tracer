@@ -11,7 +11,7 @@ import utils "src:utilities"
 @(test)
 sphere_default_transform :: proc(t: ^testing.T) {
 	s := sphere.sphere()
-	testing.expect(t, utils.matrix4_equals_f32(s.transform, utils.matrix4_identity()), "Default Sphere transform is incorrect.")
+	testing.expect(t, utils.matrix4_equals_f64(s.transform, utils.matrix4_identity()), "Default Sphere transform is incorrect.")
 }
 
 @(test)
@@ -20,7 +20,7 @@ sphere_change_transform :: proc(t: ^testing.T) {
 	translate := transforms.get_translation_matrix(2, 3, 4)
 	sphere.set_transform(&s, translate)
 
-	testing.expect(t, utils.matrix4_equals_f32(s.transform, translate), "Sphere transform is incorrect.")
+	testing.expect(t, utils.matrix4_equals_f64(s.transform, translate), "Sphere transform is incorrect.")
 }
 
 @(test)
@@ -58,7 +58,7 @@ normal_z :: proc(t: ^testing.T) {
 
 @(test)
 normal_nonaxial :: proc(t: ^testing.T) {
-	a := math.sqrt_f32(3) / 3
+	a := math.sqrt_f64(3) / 3
 	s := sphere.sphere()
 	p := tuples.point(a, a, a)
 	n := sphere.normal_at(&s, p)
@@ -70,7 +70,7 @@ normal_nonaxial :: proc(t: ^testing.T) {
 
 @(test)
 normal_normalized :: proc(t: ^testing.T) {
-	a := math.sqrt_f32(3) / 3
+	a := math.sqrt_f64(3) / 3
 	s := sphere.sphere()
 	p := tuples.point(a, a, a)
 	n := sphere.normal_at(&s, p)
@@ -95,7 +95,7 @@ normal_translated :: proc(t: ^testing.T) {
 
 @(test)
 normal_transformed :: proc(t: ^testing.T) {
-	a := math.sqrt_f32(2) / 2
+	a := math.sqrt_f64(2) / 2
 	s := sphere.sphere()
 	transform := transforms.get_scale_matrix(1, 0.5, 1) * transforms.get_rotation_matrix(math.PI / 5, .Z)
 	sphere.set_transform(&s, transform)

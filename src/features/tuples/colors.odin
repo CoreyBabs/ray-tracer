@@ -2,10 +2,10 @@ package tuples
 
 import utils "src:utilities"
 
-Color :: [3]f32
+Color :: [3]f64
 
-color :: proc(r, g, b: f32) -> Color {
-	return [3]f32{r, g, b}
+color :: proc(r, g, b: f64) -> Color {
+	return [3]f64{r, g, b}
 }
 
 add_colors :: proc(a, b: Color) -> Color {
@@ -16,7 +16,7 @@ subtract_colors :: proc(a, b: Color) -> Color {
 	return a - b
 }
 
-color_scalar_multiply :: proc(a: Color, scalar: f32) -> Color {
+color_scalar_multiply :: proc(a: Color, scalar: f64) -> Color {
 	return a * scalar
 }
 

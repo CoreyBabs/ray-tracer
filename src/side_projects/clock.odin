@@ -12,14 +12,14 @@ clock :: proc() {
 	color := tuples.color(255, 255, 255)
 
 
-	r : f32 = (3.0 / 8.0) * f32(c.width)
+	r : f64 = (3.0 / 8.0) * f64(c.width)
 	cx := (c.width / 2) - 1
 	cy := (c.width / 2) - 1
 
 	p := tuples.point(0, 0, 1)
 
 	for i := 0; i < 12; i+=1 {
-		radians := f32(i) * (math.PI / 6)
+		radians := f64(i) * (math.PI / 6)
 		rp := transforms.rotate_y(p, radians)
 
 		clock_point := rp * r

@@ -12,12 +12,12 @@ create_ray :: proc(origin, direction: tuples.Tuple) -> Ray {
 	return Ray{origin, direction}
 }
 
-position :: proc(ray: ^Ray, t: f32) -> tuples.Tuple {
+position :: proc(ray: ^Ray, t: f64) -> tuples.Tuple {
 	velocity := tuples.scalar_multiply(ray.direction, t)
 	return tuples.add_tuples(ray.origin, velocity)
 }
 
-transform :: proc(ray: ^Ray, transform: matrix[4, 4]f32) -> Ray {
+transform :: proc(ray: ^Ray, transform: matrix[4, 4]f64) -> Ray {
 	origin := transform * ray.origin
 	direction := transform * ray.direction
 	return Ray{origin, direction}

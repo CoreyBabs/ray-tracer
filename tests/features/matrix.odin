@@ -7,7 +7,7 @@ import utils "src:utilities"
 
 @(test)
 create_matrix :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		5.5, 6.5, 7.5, 8.5,
 		9, 10, 11, 12,
@@ -25,7 +25,7 @@ create_matrix :: proc(t: ^testing.T) {
 
 @(test)
 create_2x2_matrix :: proc(t: ^testing.T) {
-	m := matrix[2, 2]f32{
+	m := matrix[2, 2]f64{
 		-3, 5,
 		1, -2
 	}
@@ -38,7 +38,7 @@ create_2x2_matrix :: proc(t: ^testing.T) {
 
 @(test)
 create_3x3_matrix :: proc(t: ^testing.T) {
-	m := matrix[3, 3]f32{
+	m := matrix[3, 3]f64{
 		-3, 5, 0,
 		1, -2, -7,
 		0, 1, 1
@@ -51,14 +51,14 @@ create_3x3_matrix :: proc(t: ^testing.T) {
 
 @(test)
 matrix_eq :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 		9, 8, 7, 6,
 		5, 4, 3, 2
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 		9, 8, 7, 6,
@@ -70,14 +70,14 @@ matrix_eq :: proc(t: ^testing.T) {
 
 @(test)
 matrix_neq :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 		9, 8, 7, 6,
 		5, 4, 3, 2
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		2, 3, 4, 5,
 		6, 7, 8, 9,
 		8, 7, 6, 5,
@@ -90,21 +90,21 @@ matrix_neq :: proc(t: ^testing.T) {
 
 @(test)
 matrix_multiply :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 		9, 8, 7, 6,
 		5, 4, 3, 2
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		-2, 1, 2, 3,
 		3, 2, 1, -1,
 		4, 3, 6, 5,
 		1, 2, 7, 8
 	}
 
-	result := matrix[4, 4]f32{
+	result := matrix[4, 4]f64{
 		20, 22, 50, 48,
 		44, 54, 114, 108,
 		40, 58, 110, 102,
@@ -116,37 +116,37 @@ matrix_multiply :: proc(t: ^testing.T) {
 
 @(test)
 matrix_multiply_by_tuple :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		1, 2, 3, 4,
 		2, 4, 4, 2,
 		8, 6, 4, 1,
 		0, 0, 0, 1
 	}
 
-	n := [4]f32{1, 2 , 3, 1}
+	n := [4]f64{1, 2 , 3, 1}
 
-	result := [4]f32{18, 24, 33, 1}
+	result := [4]f64{18, 24, 33, 1}
 
 	testing.expect(t, m * n == result)
 }
 
 @(test)
 identity_matrix_multiply :: proc(t: ^testing.T) {
-	identity := matrix[4, 4]f32{
+	identity := matrix[4, 4]f64{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	}
 
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		0, 1, 2, 4,
 		1, 2, 4, 8,
 		2, 4, 8, 16,
 		4, 8, 16, 32
 	}
 
-	a := [4]f32{1, 2, 3, 4}
+	a := [4]f64{1, 2, 3, 4}
 
 	testing.expect(t, m * identity == m)
 	testing.expect(t, identity * a == a)
@@ -154,14 +154,14 @@ identity_matrix_multiply :: proc(t: ^testing.T) {
 
 @(test)
 matrix_transpose :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		0, 9, 3, 0,
 		9, 8, 0, 8,
 		1, 8, 5, 3,
 		0, 0, 5, 8
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		0, 9, 1, 0,
 		9, 8, 8, 0,
 		3, 0, 5, 5,
@@ -174,7 +174,7 @@ matrix_transpose :: proc(t: ^testing.T) {
 
 @(test)
 identity_transpose :: proc(t: ^testing.T) {
-	identity := matrix[4, 4]f32{
+	identity := matrix[4, 4]f64{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -187,7 +187,7 @@ identity_transpose :: proc(t: ^testing.T) {
 
 @(test)
 matrix_determinant :: proc(t: ^testing.T) {
-	m := matrix[2, 2]f32{
+	m := matrix[2, 2]f64{
 		1, 5,
 		-3, 2,
 	}
@@ -198,7 +198,7 @@ matrix_determinant :: proc(t: ^testing.T) {
 
 @(test)
 matrix_minor :: proc(t: ^testing.T) {
-	m := matrix[3, 3]f32{
+	m := matrix[3, 3]f64{
 		3, 5, 0,
 		2, -1, -7,
 		6, -1, 5
@@ -210,7 +210,7 @@ matrix_minor :: proc(t: ^testing.T) {
 
 @(test)
 matrix4_determinant :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		-2, -8, 3, 5,
 		-3, 1, 7, 3,
 		1, 2, -9, 6,
@@ -224,14 +224,14 @@ matrix4_determinant :: proc(t: ^testing.T) {
 
 @(test)
 matrix_can_invert :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		6, 4, 4, 4,
 		5, 5, 7, 6,
 		4, -9, 3, -7,
 		9, 1, 7, -6
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		-4, 2, -2, -3,
 		9, 6, 2, 6,
 		0, -5, 1, -5,
@@ -246,28 +246,28 @@ matrix_can_invert :: proc(t: ^testing.T) {
 
 @(test)
 matrix_inverse :: proc(t: ^testing.T) {
-	m := matrix[4, 4]f32{
+	m := matrix[4, 4]f64{
 		-5, 2, 6, -8,
 		1, -5, 1, 8,
 		7, 7, -6, -7,
 		1, -3, 7, 4
 	}
 
-	expected_m := matrix[4, 4]f32{
+	expected_m := matrix[4, 4]f64{
 		0.21805, 0.45113, 0.24060, -0.04511,
 		-0.80827, -1.45677, -0.44361, 0.52068,
 		-0.07895, -0.22368, -0.05263, 0.19737,
 		-0.52256, -0.81391, -0.30075, 0.30639,
 	}
 
-	n := matrix[4, 4]f32{
+	n := matrix[4, 4]f64{
 		8, -5, 9, 2,
 		7, 5, 6, 1,
 		-6, 0, 9, 6,
 		-3, 0, -9, -4
 	}
 
-	expected_n := matrix[4, 4]f32{
+	expected_n := matrix[4, 4]f64{
 		 -0.15385, -0.15385, -0.28205, -0.53846,
 		 -0.07692, 0.12308, 0.02564, 0.03077,
 		 0.35897, 0.35897, 0.43590, 0.92308,
@@ -275,14 +275,14 @@ matrix_inverse :: proc(t: ^testing.T) {
 	}
 
 
-	c := matrix[4, 4]f32{
+	c := matrix[4, 4]f64{
 		9, 3, 0, 9,
 		-5, -2, -6, -3,
 		-4, 9, 6, 4,
 		-7, 6, 6, 2
 	}
 
-	expected_c := matrix[4, 4]f32{
+	expected_c := matrix[4, 4]f64{
 		 -0.04074, -0.07778, 0.14444, -0.22222,
 		 -0.07778, 0.03333, 0.36667, -0.33333,
 		 -0.02901, -0.14630, -0.10926, 0.12963,
@@ -293,21 +293,21 @@ matrix_inverse :: proc(t: ^testing.T) {
 	result_n := linalg.inverse(n)
 	result_c := linalg.inverse(c)
 
-	testing.expect(t, utils.matrix4_equals_f32(result_m, expected_m))
-	testing.expect(t, utils.matrix4_equals_f32(result_n, expected_n))
-	testing.expect(t, utils.matrix4_equals_f32(result_c, expected_c))
+	testing.expect(t, utils.matrix4_equals_f64(result_m, expected_m))
+	testing.expect(t, utils.matrix4_equals_f64(result_n, expected_n))
+	testing.expect(t, utils.matrix4_equals_f64(result_c, expected_c))
 }
 
 @(test)
 inverse_multiply :: proc(t: ^testing.T) {
-	a := matrix[4,4]f32 {
+	a := matrix[4,4]f64 {
 		 3, -9, 7, 3,
 		 3, -8, 2, -9,
 		 -4, 4, 4, 1,
 		 -6, 5, -1, 1,
 	}
 
-	b := matrix[4,4]f32 {
+	b := matrix[4,4]f64 {
 		 8, 2, 2, 2,
 		 3, -1, 7, 0,
 		 7, 0, 5, 4,
@@ -315,6 +315,6 @@ inverse_multiply :: proc(t: ^testing.T) {
 	}
 
 	c := a * b
-	testing.expect(t, utils.matrix4_equals_f32(a, c * linalg.inverse(b)))
+	testing.expect(t, utils.matrix4_equals_f64(a, c * linalg.inverse(b)))
 }
 

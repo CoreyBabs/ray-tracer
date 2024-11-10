@@ -5,13 +5,13 @@ import utils "src:utilities"
 
 Material :: struct {
 	color: tuples.Color,
-	ambient: f32,
-	diffuse: f32,
-	specular: f32,
-	shininess: f32
+	ambient: f64,
+	diffuse: f64,
+	specular: f64,
+	shininess: f64
 }
 
-material :: proc(a: f32 = 0.1, d: f32 = 0.9, spec: f32 = 0.9, shine: f32 = 200.0) -> Material {
+material :: proc(a: f64 = 0.1, d: f64 = 0.9, spec: f64 = 0.9, shine: f64 = 200.0) -> Material {
 	c := tuples.color(1, 1, 1)
 	return Material{c, a, d, spec, shine}
 }

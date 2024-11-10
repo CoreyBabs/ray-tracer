@@ -20,7 +20,7 @@ create_camera :: proc(t: ^testing.T) {
 	testing.expect(t, c.hsize == 160, "Camera width is incorrect.")
 	testing.expect(t, c.vsize == 120, "Camera height is incorrect.")
 	testing.expect(t, c.fov == math.PI / 2, "Camera fov is incorrect.")
-	testing.expect(t, utils.matrix4_equals_f32(c.transform, utils.matrix4_identity()), "Camera transform is incorrect.")
+	testing.expect(t, utils.matrix4_equals_f64(c.transform, utils.matrix4_identity()), "Camera transform is incorrect.")
 }
 
 @(test)
@@ -69,7 +69,7 @@ camera_transformed_ray :: proc(t: ^testing.T) {
 		r.origin)
 	testing.expectf(
 		t,
-		tuples.tuple_equals(r.direction, tuples.vector(math.sqrt_f32(2) / 2, 0, -math.sqrt_f32(2) / 2)),
+		tuples.tuple_equals(r.direction, tuples.vector(math.sqrt_f64(2) / 2, 0, -math.sqrt_f64(2) / 2)),
 		"Ray direction from translated camera is incorrect. Got: %v",
 		r.direction)
 }

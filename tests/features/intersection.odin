@@ -242,3 +242,19 @@ inside_hit :: proc(t: ^testing.T) {
 	testing.expectf(t, tuples.tuple_equals(precomp.eyev, tuples.vector(0, 0, -1)), "Precomputed eyev is not correct. Got %v", precomp.eyev)
 	testing.expect(t, tuples.tuple_equals(precomp.normalv, tuples.vector(0, 0, -1)), "Precomputed normalv is not correct.")
 }
+
+@(test)
+offset_hit :: proc(t: ^testing.T) {
+	origin := tuples.point(0, 0, -5)
+	dir := tuples.vector(0, 0, 1)
+	r := rays.create_ray(origin, dir)
+	s := sphere.sphere()
+	transform := transforms.get_translation_matrix(0, 0, 1)
+	sphere.set_transform(&s, transform)
+	i1 := intersection.intersection(5, s)
+
+	precomp := intersection.prepare_computation(&i1, &r)
+
+	testing.expect(t, precomp.over_point.z < -utils.EPS / 2, "Precomputed over point is not correct.")
+	testing.expectf(t, precomp.point.z > precomp.over_point.z, "Precomputed over point is not correct. Expected: %v, Got: %v", precomp.point, precomp.over_point)
+}

@@ -118,3 +118,73 @@ ray_behind :: proc(t: ^testing.T) {
 	c := world.color_at(&w, &r)
 	testing.expectf(t, tuples.color_equals(c, w.objects[1].material.color), "Shading color is incorrect. Expected: %v, Got: %v", w.objects[1].material.color, c)
 }
+
+@(test)
+no_shadow :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	p := tuples.point(0, 10, 0)
+	is_shadowed := world.is_shadowed(&w, &p)
+
+	testing.expect(t, !is_shadowed, "Point was incorrectly shadowed.")
+}
+
+@(test)
+is_shadow :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	p := tuples.point(10, -10, 10)
+	is_shadowed := world.is_shadowed(&w, &p)
+
+	testing.expect(t, is_shadowed, "Point was incorrectly shadowed.")
+}
+
+@(test)
+no_shadow_behind_light :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	p := tuples.point(-20, 20, -20)
+	is_shadowed := world.is_shadowed(&w, &p)
+
+	testing.expect(t, !is_shadowed, "Point was incorrectly shadowed.")
+}
+
+@(test)
+no_shadow_in_between :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	p := tuples.point(-2, 2, -2)
+	is_shadowed := world.is_shadowed(&w, &p)
+
+	testing.expect(t, !is_shadowed, "Point was incorrectly shadowed.")
+}
+
+@(test)
+render_shadow :: proc(t: ^testing.T) {
+	w := world.empty_world()
+	defer world.delete_world(&w)
+
+	l := light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
+	world.set_light(&w, l)
+
+	s1 := sphere.sphere()
+	s2 := sphere.sphere()
+	transform := transforms.get_translation_matrix(0, 0 ,10)
+	sphere.set_transform(&s2, transform)
+
+	world.add_object(&w, s1)
+	world.add_object(&w, s2)
+
+	r := rays.create_ray(tuples.point(0, 0, 5), tuples.vector(0, 0, 1))
+	i := intersection.intersection(4, s2)
+
+	comps := intersection.prepare_computation(&i, &r)
+
+	c := world.shade_hit(&w, &comps)
+
+	testing.expect(t, tuples.color_equals(c, tuples.color(0.1, 0.1, 0.1)), "Shadow color is not correct.")
+}
