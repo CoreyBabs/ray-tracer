@@ -4,7 +4,7 @@ import "core:testing"
 import "src:features/intersection"
 import "src:features/light"
 import "src:features/rays"
-import "src:features/sphere"
+import "src:features/shape"
 import "src:features/tuples"
 import "src:features/transforms"
 import "src:features/world"
@@ -19,23 +19,23 @@ create_world :: proc(t: ^testing.T) {
 @(test)
 default_world :: proc(t: ^testing.T) {
 	l := light.point_light(tuples.point(-10, 10, -10), tuples.color(1, 1, 1))
-	s1 := sphere.sphere()
-	s2 := sphere.sphere()
+	s1 := shape.default_shape()
+	s2 := shape.default_shape()
 
 	m := light.material(d=0.7, spec=0.2)
 	light.set_material_color(&m, tuples.color(0.8, 1.0, 0.6))
-	sphere.set_material(&s1, m)
+	shape.set_material(&s1, m)
 
 	transform := transforms.get_scale_matrix(0.5, 0.5, 0.5)
-	sphere.set_transform(&s2, transform)
+	shape.set_transform(&s2, transform)
 
 	w := world.default_world()
 	defer world.delete_world(&w)
 
 	testing.expect(t, tuples.tuple_equals(l.position, w.light.position), "Default world light is incorrect.")
 	testing.expect(t, tuples.color_equals(l.intensity, w.light.intensity), "Default world light is incorrect.")
-	testing.expect(t, world.contains_object(&w, &s1), "Default world does not contain a sphere with the expected material.")
-	testing.expect(t, world.contains_object(&w, &s2), "Default world does not contain a sphere with the expected transform.")
+	testing.expect(t, world.contains_object(&w, &s1), "Default world does not contain a shape with the expected material.")
+	testing.expect(t, world.contains_object(&w, &s2), "Default world does not contain a shape with the expected transform.")
 }
 
 @(test)
@@ -171,10 +171,10 @@ render_shadow :: proc(t: ^testing.T) {
 	l := light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
 	world.set_light(&w, l)
 
-	s1 := sphere.sphere()
-	s2 := sphere.sphere()
+	s1 := shape.default_shape()
+	s2 := shape.default_shape()
 	transform := transforms.get_translation_matrix(0, 0 ,10)
-	sphere.set_transform(&s2, transform)
+	shape.set_transform(&s2, transform)
 
 	world.add_object(&w, s1)
 	world.add_object(&w, s2)

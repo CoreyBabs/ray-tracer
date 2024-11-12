@@ -3,7 +3,7 @@ package test_features
 import "core:testing"
 import "core:math"
 import "src:features/light"
-import "src:features/sphere"
+import "src:features/shape"
 import "src:features/transforms"
 import "src:features/tuples"
 import utils "src:utilities"

@@ -8,7 +8,7 @@ import "src:features/canvas"
 import "src:features/intersection"
 import "src:features/light"
 import "src:features/transforms"
-import "src:features/sphere"
+import "src:features/shape"
 import "src:features/rays"
 import "src:features/world"
 

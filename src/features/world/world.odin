@@ -4,12 +4,12 @@ import "core:slice"
 import "src:features/intersection"
 import "src:features/light"
 import "src:features/rays"
-import "src:features/sphere"
+import "src:features/shape"
 import "src:features/transforms"
 import "src:features/tuples"
 
 World :: struct {
-	objects: [dynamic]sphere.Sphere,
+	objects: [dynamic]shape.Shape,
 	light: light.Light
 }
 
@@ -22,9 +22,9 @@ set_light :: proc(w: ^World, l: light.Light) {
 	w.light = l
 }
 
-add_object :: proc(w: ^World, s: sphere.Sphere) {
+add_object :: proc(w: ^World, s: shape.Shape) {
 	if w.objects == nil {
-		w.objects = make([dynamic]sphere.Sphere, 1)
+		w.objects = make([dynamic]shape.Shape, 1)
 		w.objects[0] = s
 	}
 	else {
@@ -34,17 +34,17 @@ add_object :: proc(w: ^World, s: sphere.Sphere) {
 
 default_world :: proc() -> World {
 	l := light.point_light(tuples.point(-10, 10, -10), tuples.color(1, 1, 1))
-	s1 := sphere.sphere()
-	s2 := sphere.sphere()
+	s1 := shape.default_shape()
+	s2 := shape.default_shape()
 
 	m := light.material(d=0.7, spec=0.2)
 	light.set_material_color(&m, tuples.color(0.8, 1.0, 0.6))
-	sphere.set_material(&s1, m)
+	shape.set_material(&s1, m)
 
 	transform := transforms.get_scale_matrix(0.5, 0.5, 0.5)
-	sphere.set_transform(&s2, transform)
+	shape.set_transform(&s2, transform)
 
-	objs := make([dynamic]sphere.Sphere, 2)
+	objs := make([dynamic]shape.Shape, 2)
 	objs[0] = s1
 	objs[1] = s2
 
@@ -81,9 +81,9 @@ color_at :: proc(w: ^World, ray: ^rays.Ray) -> tuples.Color {
 	return shade_hit(w, &comps)
 }
 
-contains_object :: proc(w: ^World, s: ^sphere.Sphere) -> bool {
-	for obj in w.objects {
-		if sphere.sphere_equals(obj, s^) {
+contains_object :: proc(w: ^World, s: ^shape.Shape) -> bool {
+	for &obj in w.objects {
+		if shape.shape_equals(&obj, s) {
 			return true
 		}
 	}
