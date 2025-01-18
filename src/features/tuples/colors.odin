@@ -27,3 +27,11 @@ color_multiply :: proc(a, b: Color) -> Color {
 color_equals :: proc(a, b: Color) -> bool {
 	return utils.fp_equals(a.r, b.r) && utils.fp_equals(a.g, b.g) && utils.fp_equals(a.b, b.b)
 }
+
+black :: proc() -> Color {
+	return [3]f64{0, 0, 0}
+}
+
+white :: proc() -> Color {
+	return [3]f64{1, 1, 1}
+}

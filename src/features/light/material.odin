@@ -1,5 +1,6 @@
 package light
 
+import "src:features/patterns"
 import "src:features/tuples"
 import utils "src:utilities"
 
@@ -8,16 +9,21 @@ Material :: struct {
 	ambient: f64,
 	diffuse: f64,
 	specular: f64,
-	shininess: f64
+	shininess: f64,
+	pattern: patterns.Pattern
 }
 
 material :: proc(a: f64 = 0.1, d: f64 = 0.9, spec: f64 = 0.9, shine: f64 = 200.0) -> Material {
 	c := tuples.color(1, 1, 1)
-	return Material{c, a, d, spec, shine}
+	return Material{c, a, d, spec, shine, patterns.empty_pattern()}
 }
 
 set_material_color :: proc(m: ^Material, color: tuples.Color) {
 	m.color = color
+}
+
+set_material_pattern :: proc(m: ^Material, pattern: patterns.Pattern) {
+	m.pattern = pattern
 }
 
 material_equals :: proc(m1, m2: Material) -> bool {

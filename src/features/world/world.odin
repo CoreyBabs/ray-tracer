@@ -65,7 +65,7 @@ intersect_world :: proc(w: ^World, ray: ^rays.Ray) -> [dynamic]intersection.Inte
 
 shade_hit :: proc(w: ^World, comps: ^intersection.Precompute) -> tuples.Color {
 	in_shadow := is_shadowed(w, &comps.over_point)
-	return light.lighting(&comps.object.material, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
+	return light.lighting(&comps.object.material, comps.object.transform, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
 }
 
 color_at :: proc(w: ^World, ray: ^rays.Ray) -> tuples.Color {

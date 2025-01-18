@@ -1,6 +1,7 @@
 package light
 
 import "core:math"
+import "src:features/patterns"
 import "src:features/tuples"
 
 Light :: struct {
@@ -12,15 +13,19 @@ point_light :: proc(p: tuples.Tuple, i: tuples.Color) -> Light {
 	return Light{p, i}
 }
 
+// The obj param should be a shape, but given the current project setup, this would 
+// create a circular dependency so it uses the shapes transform directly instead
 lighting :: proc(
 	m: ^Material,
+	obj: matrix[4,4]f64,
 	l: ^Light,
 	p: tuples.Tuple,
 	eyev: tuples.Tuple,
 	n: tuples.Tuple,
 	in_shadow := false) -> tuples.Color {
 
-	effective_color := m.color * l.intensity
+	color := patterns.is_empty(&m.pattern) ? m.color : patterns.stripe_at_object(&m.pattern, obj, p)
+	effective_color := color * l.intensity
 
 	lv := tuples.normalize(l.position - p)
 	ambient := effective_color * m.ambient

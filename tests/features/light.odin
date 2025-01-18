@@ -3,6 +3,7 @@ package test_features
 import "core:testing"
 import "core:math"
 import "src:features/light"
+import "src:features/patterns"
 import "src:features/shape"
 import "src:features/transforms"
 import "src:features/tuples"
@@ -36,7 +37,7 @@ eye_between_light_and_surface :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(1.9, 1.9, 1.9)), "Lighting is incorrect.")
 }
@@ -50,7 +51,7 @@ eye_offset_by_45_degrees :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(1.0, 1.0, 1.0)), "Lighting is incorrect.")
 }
@@ -63,7 +64,7 @@ light_offset_by_45_degrees :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 10, -10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n)
 
 	testing.expect(t, tuples.color_equals(result, tuples.color(0.7364, 0.7364, 0.7364)), "Lighting is incorrect.")
 }
@@ -77,7 +78,7 @@ eye_in_reflection_path :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, -a, -a)
 	n := tuples.vector(0, 0, -1)
 	l:= light.point_light(tuples.point(0, 10, -10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(1.6364, 1.6364, 1.6364)), "Lighting is incorrect. Got: %v", result)
 }
@@ -90,7 +91,7 @@ light_behind_surface :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l := light.point_light(tuples.point(0, 0, 10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(0.1, 0.1, 0.1)), "Lighting is incorrect. Got: %v", result)
 }
@@ -103,7 +104,24 @@ point_in_shadow :: proc(t: ^testing.T) {
 	eyev := tuples.vector(0, 0, -1)
 	n := tuples.vector(0, 0, -1)
 	l := light.point_light(tuples.point(0, 0, -10), tuples.color(1, 1, 1))
-	result := light.lighting(&m, &l, p, eyev, n, true)
+	result := light.lighting(&m, shape.default_shape().transform, &l, p, eyev, n, true)
 
 	testing.expectf(t, tuples.color_equals(result, tuples.color(0.1, 0.1, 0.1)), "Lighting is incorrect. Got: %v", result)
+}
+
+@(test)
+light_with_pattern :: proc(t: ^testing.T) {
+	m := light.material(a=1, d=0, spec=0)
+	p := patterns.stripes(tuples.white(), tuples.black())
+	light.set_material_pattern(&m, p)
+
+	eyev := tuples.vector(0, 0, -1)
+	normalv := tuples.vector(0, 0, -1)
+	l := light.point_light(tuples.point(0, 0, -10), tuples.white())
+
+	c1 := light.lighting(&m, shape.default_shape().transform, &l, tuples.point(0.9, 0, 0), eyev, normalv, false)
+	c2 := light.lighting(&m, shape.default_shape().transform, &l, tuples.point(1.1, 0, 0), eyev, normalv, false)
+
+	testing.expectf(t, tuples.color_equals(c1, tuples.white()), "Lighting is incorrect. Got: %v", c1)
+	testing.expectf(t, tuples.color_equals(c2, tuples.black()), "Lighting is incorrect. Got: %v", c2)
 }

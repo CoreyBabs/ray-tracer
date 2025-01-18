@@ -2,7 +2,6 @@ package shape
 
 import "core:math"
 import "core:math/linalg"
-import "src:features/light"
 import "src:features/rays"
 import "src:features/tuples"
 import utils "src:utilities"
