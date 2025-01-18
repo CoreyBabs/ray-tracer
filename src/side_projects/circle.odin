@@ -31,8 +31,8 @@ circle :: proc() {
 
 	world.set_light(&w, l)
 	world.add_object(&w, floor())
-	world.add_object(&w, left_wall())
-	world.add_object(&w, right_wall())
+	// world.add_object(&w, left_wall())
+	// world.add_object(&w, right_wall())
 	world.add_object(&w, middle())
 	world.add_object(&w, right())
 	world.add_object(&w, left())
@@ -46,11 +46,13 @@ circle :: proc() {
 
 floor :: proc() -> shape.Shape {
 	floor := shape.default_shape()
-	transform := transforms.get_scale_matrix(10, 0.01, 10)
+	plane := shape.plane()
+	shape.set_shape(&floor, plane)
+	// transform := transforms.get_scale_matrix(10, 0.01, 10)
 	mat := light.material(spec=0)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 
-	shape.set_transform(&floor, transform)
+	// shape.set_transform(&floor, transform)
 	shape.set_material(&floor, mat)
 
 	return floor
