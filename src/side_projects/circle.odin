@@ -7,6 +7,7 @@ import "src:features/tuples"
 import "src:features/canvas"
 import "src:features/intersection"
 import "src:features/light"
+import "src:features/patterns"
 import "src:features/transforms"
 import "src:features/shape"
 import "src:features/rays"
@@ -48,9 +49,14 @@ floor :: proc() -> shape.Shape {
 	floor := shape.default_shape()
 	plane := shape.plane()
 	shape.set_shape(&floor, plane)
-	// transform := transforms.get_scale_matrix(10, 0.01, 10)
+
+	pattern := patterns.checker(tuples.color(1, 1, 0), tuples.color(0.5, 0.5, 0.5))
+	transform := transforms.get_scale_matrix(2, 2, 2)
+	patterns.set_transform(&pattern, transform)
+
 	mat := light.material(spec=0)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
+	light.set_material_pattern(&mat, pattern)
 
 	// shape.set_transform(&floor, transform)
 	shape.set_material(&floor, mat)
@@ -90,8 +96,11 @@ middle :: proc() -> shape.Shape {
 	mid := shape.default_shape()
 	transform := transforms.get_translation_matrix(-0.5, 1, 0.5)
 
+	pattern := patterns.gradient(tuples.color(0, 1, 0), tuples.color(0, 0, 1))
+
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(0.1, 1, 0.5))
+	light.set_material_pattern(&mat, pattern)
 
 	shape.set_transform(&mid, transform)
 	shape.set_material(&mid, mat)
@@ -103,8 +112,13 @@ right :: proc() -> shape.Shape {
 	right := shape.default_shape()
 	transform := transforms.get_translation_matrix(1.5, 0.5, -0.5) * transforms.get_scale_matrix(0.5, 0.5, 0.5)
 
+	pattern := patterns.checker(tuples.color(1, 0.6, 0), tuples.white())
+	ptransform := transforms.get_scale_matrix(0.5, 0.5, 0.5)
+	patterns.set_transform(&pattern, ptransform)
+
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(0.5, 1, 0.1))
+	light.set_material_pattern(&mat, pattern)
 
 	shape.set_transform(&right, transform)
 	shape.set_material(&right, mat)
@@ -116,8 +130,13 @@ left :: proc() -> shape.Shape {
 	left := shape.default_shape()
 	transform := transforms.get_translation_matrix(-1.5, 0.33, -0.75) * transforms.get_scale_matrix(0.33, 0.33, 0.33)
 
+	pattern := patterns.ring(tuples.color(1, 0.8, 0.1), tuples.black())
+	ptransform := transforms.get_scale_matrix(0.5, 0.5, 0.5)
+	patterns.set_transform(&pattern, ptransform)
+
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(1, 0.8, 0.1))
+	light.set_material_pattern(&mat, pattern)
 
 	shape.set_transform(&left, transform)
 	shape.set_material(&left, mat)

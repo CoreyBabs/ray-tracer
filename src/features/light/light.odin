@@ -24,7 +24,7 @@ lighting :: proc(
 	n: tuples.Tuple,
 	in_shadow := false) -> tuples.Color {
 
-	color := patterns.is_empty(&m.pattern) ? m.color : patterns.stripe_at_object(&m.pattern, obj, p)
+	color := patterns.is_empty(&m.pattern) ? m.color : patterns.pattern_at_shape(&m.pattern, obj, p)
 	effective_color := color * l.intensity
 
 	lv := tuples.normalize(l.position - p)
