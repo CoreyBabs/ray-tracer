@@ -7,7 +7,8 @@ import "src:features/tuples"
 import utils "src:utilities"
 
 ShapeType :: union {
-	Sphere
+	Sphere,
+	Plane,
 }
 
 Shape :: struct {
@@ -39,6 +40,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 	switch &t in s.shape {
 	case Sphere:
 		shape_normal = sphere_normal_at(&t, obj_p)
+	case Plane:
+		shape_normal = plane_normal_at(&t, obj_p)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -46,15 +49,15 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 	wn := linalg.transpose(linalg.inverse(s.transform)) * shape_normal
 	wn.w = 0
 	return tuples.normalize(wn)
-
 }
 
-intersect :: proc(s: ^Shape, ray: rays.Ray) -> (f64, f64, bool) {
+intersect :: proc(s: ^Shape, ray: rays.Ray) -> []f64 {
 	s.ray = ray
 	switch &t in s.shape {
 	case Sphere:
-		t1, t2, rn := sphere_intersect(&t, &s.ray)
-		return t1, t2, rn
+		return sphere_intersect(&t, &s.ray)
+	case Plane:
+		return plane_intersect(&t, &s.ray)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -68,6 +71,8 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 	switch &t in s1.shape {
 	case Sphere:
 		return sphere_equals(&s1.shape.(Sphere), &s2.shape.(Sphere))
+	case Plane:
+		return plane_equals(&s1.shape.(Plane), &s2.shape.(Plane))
 	case:
 		panic("Unknown shape type.")
 	}

@@ -13,10 +13,10 @@ import "src:features/rays"
 import "src:features/world"
 
 circle :: proc() {
-	s := sphere.sphere()
+	s := shape.default_shape()
 	m := light.material(0.5, 0.9, 0.1)
 	light.set_material_color(&m, tuples.color(0.5, 0.2, 1))
-	sphere.set_material(&s, m)
+	shape.set_material(&s, m)
 
 	light_position := tuples.point(-10, 10, -10)
 	light_color := tuples.color(1, 1, 1)
@@ -44,81 +44,81 @@ circle :: proc() {
 	result := os.write_entire_file("./images/circle.ppm", transmute([]u8)ppm)
 }
 
-floor :: proc() -> sphere.Sphere {
-	floor := sphere.sphere()
+floor :: proc() -> shape.Shape {
+	floor := shape.default_shape()
 	transform := transforms.get_scale_matrix(10, 0.01, 10)
 	mat := light.material(spec=0)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 
-	sphere.set_transform(&floor, transform)
-	sphere.set_material(&floor, mat)
+	shape.set_transform(&floor, transform)
+	shape.set_material(&floor, mat)
 
 	return floor
 }
 
-left_wall :: proc() -> sphere.Sphere {
-	wall := sphere.sphere()
+left_wall :: proc() -> shape.Shape {
+	wall := shape.default_shape()
 	transform := transforms.get_translation_matrix(0, 0, 5) * 
 		transforms.get_rotation_matrix(-math.PI / 4, .Y) * transforms.get_rotation_matrix(math.PI / 2, .X) *
 		transforms.get_scale_matrix(10, 0.01, 10)
 	mat := light.material(spec=0)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 
-	sphere.set_transform(&wall, transform)
-	sphere.set_material(&wall, mat)
+	shape.set_transform(&wall, transform)
+	shape.set_material(&wall, mat)
 
 	return wall
 }
 
-right_wall :: proc() -> sphere.Sphere {
-	wall := sphere.sphere()
+right_wall :: proc() -> shape.Shape {
+	wall := shape.default_shape()
 	transform := transforms.get_translation_matrix(0, 0, 5) * 
 		transforms.get_rotation_matrix(math.PI / 4, .Y) * transforms.get_rotation_matrix(math.PI / 2, .X) *
 		transforms.get_scale_matrix(10, 0.01, 10)
 	mat := light.material(spec=0)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 
-	sphere.set_transform(&wall, transform)
-	sphere.set_material(&wall, mat)
+	shape.set_transform(&wall, transform)
+	shape.set_material(&wall, mat)
 
 	return wall
 }
 
-middle :: proc() -> sphere.Sphere {
-	mid := sphere.sphere()
+middle :: proc() -> shape.Shape {
+	mid := shape.default_shape()
 	transform := transforms.get_translation_matrix(-0.5, 1, 0.5)
 
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(0.1, 1, 0.5))
 
-	sphere.set_transform(&mid, transform)
-	sphere.set_material(&mid, mat)
+	shape.set_transform(&mid, transform)
+	shape.set_material(&mid, mat)
 
 	return mid
 }
 
-right :: proc() -> sphere.Sphere {
-	right := sphere.sphere()
+right :: proc() -> shape.Shape {
+	right := shape.default_shape()
 	transform := transforms.get_translation_matrix(1.5, 0.5, -0.5) * transforms.get_scale_matrix(0.5, 0.5, 0.5)
 
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(0.5, 1, 0.1))
 
-	sphere.set_transform(&right, transform)
-	sphere.set_material(&right, mat)
+	shape.set_transform(&right, transform)
+	shape.set_material(&right, mat)
 
 	return right
 }
 
-left :: proc() -> sphere.Sphere {
-	left := sphere.sphere()
+left :: proc() -> shape.Shape {
+	left := shape.default_shape()
 	transform := transforms.get_translation_matrix(-1.5, 0.33, -0.75) * transforms.get_scale_matrix(0.33, 0.33, 0.33)
 
 	mat := light.material(d=0.7, spec=0.3)
 	light.set_material_color(&mat, tuples.color(1, 0.8, 0.1))
 
-	sphere.set_transform(&left, transform)
-	sphere.set_material(&left, mat)
+	shape.set_transform(&left, transform)
+	shape.set_material(&left, mat)
 
 	return left
 }

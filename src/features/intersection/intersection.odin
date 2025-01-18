@@ -27,19 +27,26 @@ aggregate_intersections :: proc(intersections: ..Intersection) -> [dynamic]Inter
 	return aggregate
 }
 
+aggregate_ts :: proc(s: ^shape.Shape, ts: ..f64) -> [dynamic]Intersection {
+	aggregate: [dynamic]Intersection
+	for t in ts {
+		append(&aggregate, intersection(t, s^))
+	}
+
+	return aggregate
+}
+
 intersect :: proc(s: ^shape.Shape, ray: ^rays.Ray) -> [dynamic]Intersection {
 	transformed_ray := rays.transform(ray, linalg.inverse(s.transform))
 
-	t1, t2, return_nil := shape.intersect(s, transformed_ray)
+	ts := shape.intersect(s, transformed_ray)
+	defer delete(ts)
 
-	if return_nil {
+	if ts == nil {
 		return nil
 	}
 
-	i1 := intersection(t1, s^)
-	i2 := intersection(t2, s^)
-	
-	return aggregate_intersections(i1, i2)
+	return aggregate_ts(s, ..ts)
 }
 
 hit :: proc(intersections: [dynamic]Intersection) -> (Intersection, bool) {
