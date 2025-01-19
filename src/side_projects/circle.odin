@@ -50,11 +50,11 @@ floor :: proc() -> shape.Shape {
 	plane := shape.plane()
 	shape.set_shape(&floor, plane)
 
-	pattern := patterns.checker(tuples.color(1, 1, 0), tuples.color(0.5, 0.5, 0.5))
+	pattern := patterns.checker(tuples.color(1, 0, 1), tuples.color(0.5, 0.5, 0.5))
 	transform := transforms.get_scale_matrix(2, 2, 2)
 	patterns.set_transform(&pattern, transform)
 
-	mat := light.material(spec=0)
+	mat := light.material(spec=0, reflective=1)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 	light.set_material_pattern(&mat, pattern)
 
@@ -98,7 +98,7 @@ middle :: proc() -> shape.Shape {
 
 	pattern := patterns.gradient(tuples.color(0, 1, 0), tuples.color(0, 0, 1))
 
-	mat := light.material(d=0.7, spec=0.3)
+	mat := light.material(d=0.7, spec=0.3, reflective=0.5)
 	light.set_material_color(&mat, tuples.color(0.1, 1, 0.5))
 	light.set_material_pattern(&mat, pattern)
 

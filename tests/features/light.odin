@@ -2,11 +2,14 @@ package test_features
 
 import "core:testing"
 import "core:math"
+import "src:features/intersection"
 import "src:features/light"
 import "src:features/patterns"
+import "src:features/rays"
 import "src:features/shape"
 import "src:features/transforms"
 import "src:features/tuples"
+import "src:features/world"
 import utils "src:utilities"
 
 @(test)
@@ -124,4 +127,10 @@ light_with_pattern :: proc(t: ^testing.T) {
 
 	testing.expectf(t, tuples.color_equals(c1, tuples.white()), "Lighting is incorrect. Got: %v", c1)
 	testing.expectf(t, tuples.color_equals(c2, tuples.black()), "Lighting is incorrect. Got: %v", c2)
+}
+
+@(test)
+default_reflection :: proc(t: ^testing.T) {
+	m := light.material()
+	testing.expect(t, utils.fp_equals(m.reflective, 0), "Default reflection is not correct.")
 }

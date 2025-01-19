@@ -1,5 +1,6 @@
 package test_features
 
+import "core:math"
 import "core:testing"
 import "src:features/intersection"
 import "src:features/light"
@@ -187,4 +188,78 @@ render_shadow :: proc(t: ^testing.T) {
 	c := world.shade_hit(&w, &comps)
 
 	testing.expect(t, tuples.color_equals(c, tuples.color(0.1, 0.1, 0.1)), "Shadow color is not correct.")
+}
+
+@(test)
+nonreflective_mat :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+	
+	r := rays.create_ray(tuples.point(0, 0, 0), tuples.vector(0, 0, 1))
+	s := &w.objects[1]
+	s.material.ambient = 1
+	i := intersection.intersection(1, s^)
+	comps := intersection.prepare_computation(&i, &r)
+	rc := world.reflected_color(&w, &comps)
+	testing.expect(t, tuples.color_equals(rc, tuples.black()), "Non reflective color is not correct.")
+}
+
+@(test)
+reflective_mat :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	ps := shape.default_shape()
+	plane := shape.plane()
+	shape.set_shape(&ps, plane)
+	ps.material.reflective = 0.5
+	shape.set_transform(&ps, transforms.get_translation_matrix(0, -1, 0))
+	world.add_object(&w, ps)
+	
+	r := rays.create_ray(tuples.point(0, 0, -3), tuples.vector(0, -math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2))
+	i := intersection.intersection(math.sqrt_f64(2), ps)
+	comps := intersection.prepare_computation(&i, &r)
+	rc := world.reflected_color(&w, &comps)
+
+	testing.expectf(t, tuples.color_equals(rc, tuples.color(0.19033, 0.23791, 0.14274)), "Reflective color is not correct. Got %v", rc)
+}
+
+@(test)
+shade_hit_reflective :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	ps := shape.default_shape()
+	plane := shape.plane()
+	shape.set_shape(&ps, plane)
+	ps.material.reflective = 0.5
+	shape.set_transform(&ps, transforms.get_translation_matrix(0, -1, 0))
+	world.add_object(&w, ps)
+
+	r := rays.create_ray(tuples.point(0, 0, -3), tuples.vector(0, -math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2))
+	i := intersection.intersection(math.sqrt_f64(2), ps)
+	comps := intersection.prepare_computation(&i, &r)
+	rc := world.shade_hit(&w, &comps)
+
+	testing.expectf(t, tuples.color_equals(rc, tuples.color(0.87676, 0.92435, 0.82917)), "Shade hit reflective is not correct. Got %v", rc)
+}
+
+@(test)
+limit_recursion :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	ps := shape.default_shape()
+	plane := shape.plane()
+	shape.set_shape(&ps, plane)
+	ps.material.reflective = 0.5
+	shape.set_transform(&ps, transforms.get_translation_matrix(0, -1, 0))
+	world.add_object(&w, ps)
+
+	r := rays.create_ray(tuples.point(0, 0, -3), tuples.vector(0, -math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2))
+	i := intersection.intersection(math.sqrt_f64(2), ps)
+	comps := intersection.prepare_computation(&i, &r)
+	rc := world.reflected_color(&w, &comps, 0)
+
+	testing.expectf(t, tuples.color_equals(rc, tuples.black()), "Rescursion limit is not respected. Got %v", rc)
 }

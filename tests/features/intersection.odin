@@ -1,5 +1,6 @@
 package test_features
 
+import "core:math"
 import "core:testing"
 import "src:features/intersection"
 import "src:features/rays"
@@ -289,4 +290,17 @@ shape_translated_intersection :: proc(t: ^testing.T) {
 
 	testing.expectf(t, tuples.tuple_equals(s.ray.origin, tuples.point(-5, 0, -5)), "Shape ray origin does not match. Got %v", s.ray.origin)
 	testing.expectf(t, tuples.tuple_equals(s.ray.direction, tuples.vector(0, 0, 1)), "Shape ray direction does not match. Got %v", s.ray.direction)
+}
+
+@(test)
+calculate_reflect_vector :: proc(t: ^testing.T) {
+	s := shape.default_shape()
+	plane := shape.plane()
+	shape.set_shape(&s, plane) 
+
+	ray := rays.create_ray(tuples.point(0, 1, -1), tuples.vector(0, -math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2))
+	i := intersection.intersection(math.sqrt_f64(2), s)
+	comps := intersection.prepare_computation(&i, &ray)
+
+	testing.expect(t, tuples.tuple_equals(comps.reflectv, tuples.vector(0, math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2)), "reflect vector is incorrect.")
 }

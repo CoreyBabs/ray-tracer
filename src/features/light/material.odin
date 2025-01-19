@@ -10,12 +10,13 @@ Material :: struct {
 	diffuse: f64,
 	specular: f64,
 	shininess: f64,
+	reflective: f64,
 	pattern: patterns.Pattern
 }
 
-material :: proc(a: f64 = 0.1, d: f64 = 0.9, spec: f64 = 0.9, shine: f64 = 200.0) -> Material {
+material :: proc(a: f64 = 0.1, d: f64 = 0.9, spec: f64 = 0.9, shine: f64 = 200.0, reflective: f64 = 0.0) -> Material {
 	c := tuples.color(1, 1, 1)
-	return Material{c, a, d, spec, shine, patterns.empty_pattern()}
+	return Material{c, a, d, spec, shine, reflective, patterns.empty_pattern()}
 }
 
 set_material_color :: proc(m: ^Material, color: tuples.Color) {

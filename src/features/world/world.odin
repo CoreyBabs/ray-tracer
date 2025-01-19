@@ -63,12 +63,14 @@ intersect_world :: proc(w: ^World, ray: ^rays.Ray) -> [dynamic]intersection.Inte
 	return intersections
 }
 
-shade_hit :: proc(w: ^World, comps: ^intersection.Precompute) -> tuples.Color {
+shade_hit :: proc(w: ^World, comps: ^intersection.Precompute, remaining: int = 5) -> tuples.Color {
 	in_shadow := is_shadowed(w, &comps.over_point)
-	return light.lighting(&comps.object.material, comps.object.transform, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
+	surface := light.lighting(&comps.object.material, comps.object.transform, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
+	reflected := reflected_color(w, comps, remaining)
+	return tuples.add_colors(surface, reflected)
 }
 
-color_at :: proc(w: ^World, ray: ^rays.Ray) -> tuples.Color {
+color_at :: proc(w: ^World, ray: ^rays.Ray, remaining: int = 5) -> tuples.Color {
 	xs := intersect_world(w, ray)
 	defer delete(xs)
 
@@ -78,7 +80,7 @@ color_at :: proc(w: ^World, ray: ^rays.Ray) -> tuples.Color {
 	}
 
 	comps := intersection.prepare_computation(&hit, ray)
-	return shade_hit(w, &comps)
+	return shade_hit(w, &comps, remaining)
 }
 
 contains_object :: proc(w: ^World, s: ^shape.Shape) -> bool {
@@ -106,6 +108,16 @@ is_shadowed :: proc(w: ^World, p: ^tuples.Tuple) -> bool {
 
 delete_world :: proc(w: ^World) {
 	delete(w.objects)
+}
+
+reflected_color :: proc(w: ^World, comps: ^intersection.Precompute, remaining: int = 5) -> tuples.Color {
+	if comps.object.material.reflective == 0 || remaining < 1 {
+		return tuples.black()
+	}
+
+	reflected_ray := rays.create_ray(comps.over_point, comps.reflectv)
+	color := color_at(w, &reflected_ray, remaining - 1)
+	return tuples.color_scalar_multiply(color, comps.object.material.reflective)
 }
 
 @(private)
