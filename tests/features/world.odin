@@ -4,6 +4,7 @@ import "core:math"
 import "core:testing"
 import "src:features/intersection"
 import "src:features/light"
+import "src:features/patterns"
 import "src:features/rays"
 import "src:features/shape"
 import "src:features/tuples"
@@ -245,7 +246,7 @@ shade_hit_reflective :: proc(t: ^testing.T) {
 }
 
 @(test)
-limit_recursion :: proc(t: ^testing.T) {
+limit_recursion_reflection :: proc(t: ^testing.T) {
 	w := world.default_world()
 	defer world.delete_world(&w)
 
@@ -262,4 +263,132 @@ limit_recursion :: proc(t: ^testing.T) {
 	rc := world.reflected_color(&w, &comps, 0)
 
 	testing.expectf(t, tuples.color_equals(rc, tuples.black()), "Rescursion limit is not respected. Got %v", rc)
+}
+
+@(test)
+opaque_refracted_color :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	s := w.objects[0]
+	r := rays.create_ray(tuples.point(0, 0, -5), tuples.vector(0, 0, 1))
+
+	i1 := intersection.intersection(4, s)
+	i2 := intersection.intersection(6, s)
+
+	xs := intersection.aggregate_intersections(i1, i2)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[0], &r, &xs)
+	c := world.refracted_color(&w, &comps, 5)
+
+	testing.expect(t, tuples.color_equals(c, tuples.black()), "Refracted color is not correct")
+}
+
+@(test)
+limit_recursion_refraction :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	s := w.objects[0]
+	s.material.transparency = 1.0
+	s.material.refractive_index = 1.5
+	r := rays.create_ray(tuples.point(0, 0, -5), tuples.vector(0, 0, 1))
+
+	i1 := intersection.intersection(4, s)
+	i2 := intersection.intersection(6, s)
+
+	xs := intersection.aggregate_intersections(i1, i2)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[0], &r, &xs)
+	c := world.refracted_color(&w, &comps, 0)
+
+	testing.expect(t, tuples.color_equals(c, tuples.black()), "Refracted color is not returning black when out of recursive calls.")
+}
+
+@(test)
+total_internal_reflection :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	s := w.objects[0]
+	s.material.transparency = 1.0
+	s.material.refractive_index = 1.5
+	r := rays.create_ray(tuples.point(0, 0, math.sqrt_f64(2)/2), tuples.vector(0, 1, 0))
+
+	i1 := intersection.intersection(-math.sqrt_f64(2) / 2, s)
+	i2 := intersection.intersection(math.sqrt_f64(2) / 2, s)
+
+	xs := intersection.aggregate_intersections(i1, i2)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[1], &r, &xs)
+
+	c := world.refracted_color(&w, &comps, 5)
+
+	testing.expect(t, tuples.color_equals(c, tuples.black()), "Refracted color is not black when total internal reflection is happening.")
+}
+
+@(test)
+refracted_color :: proc(t: ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	a := w.objects[0]
+	m := light.material(1.0)
+	light.set_material_pattern(&m, patterns.test_pattern())
+	shape.set_material(&w.objects[0], m)
+
+	b := w.objects[1]
+	b.material.transparency = 1.0
+	b.material.refractive_index = 1.5
+	r := rays.create_ray(tuples.point(0, 0, 0.1), tuples.vector(0, 1, 0))
+
+	i1 := intersection.intersection(-0.9899, a)
+	i2 := intersection.intersection(-0.4899, b)
+	i3 := intersection.intersection(0.4899, b)
+	i4 := intersection.intersection(0.9899, a)
+
+	xs := intersection.aggregate_intersections(i1, i2, i3, i4)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[2], &r, &xs)
+	c := world.refracted_color(&w, &comps, 5)
+	ec := tuples.color(0, 0.99887, 0.04722)
+
+	testing.expectf(t, tuples.color_equals(c, ec), "Refracted color is incorrect. Got %v, expected %v", c, ec)
+}
+
+@(test)
+shade_hit_with_refraction :: proc(t : ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	floor := shape.plane_shape()
+	ft := transforms.get_translation_matrix(0, -1, 0)
+	shape.set_transform(&floor, ft)
+	floor.material.transparency = 0.5
+	floor.material.refractive_index = 1.5
+
+	ball := shape.default_shape()
+	ball.material.color = tuples.color(1, 0, 0)
+	ball.material.ambient = 0.5
+	bt := transforms.get_translation_matrix(0, -3.5, -0.5)
+	shape.set_transform(&ball, bt)
+
+	world.add_object(&w, floor)
+	world.add_object(&w, ball)
+
+	r := rays.create_ray(tuples.point(0, 0, -3), tuples.vector(0, -math.sqrt_f64(2)/2, math.sqrt_f64(2)/2))
+	
+	i := intersection.intersection(math.sqrt_f64(2), floor)
+	xs := intersection.aggregate_intersections(i)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[0], &r, &xs)
+	c := world.shade_hit(&w, &comps, 5)
+	ec := tuples.color(0.93642, 0.68642, 0.68642)
+
+	testing.expectf(t, tuples.color_equals(c, ec), "Refracted color from shade hit is incorrect. Got %v, expected %v", c, ec)
 }

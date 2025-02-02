@@ -91,3 +91,11 @@ normal_transformed :: proc(t: ^testing.T) {
 
 	testing.expectf(t, tuples.tuple_equals(n, expected_n), "Normal on transformed sphere is incorrect. Got %f, %f, %f, %f", n[0], n[1], n[2], n[3])
 }
+
+@(test)
+glass_sphere :: proc(t: ^testing.T) {
+	s := shape.glass_sphere()
+	testing.expect(t, utils.matrix4_equals_f64(s.transform, utils.matrix4_identity()), "Glass sphere default transform is incorrect.")
+	testing.expect(t, utils.fp_equals(s.material.transparency, 1.0), "Glass sphere transparency is incorrect.")
+	testing.expect(t, utils.fp_equals(s.material.refractive_index, 1.5), "Glass sphere refractive index is incorrect.")
+}

@@ -304,3 +304,58 @@ calculate_reflect_vector :: proc(t: ^testing.T) {
 
 	testing.expect(t, tuples.tuple_equals(comps.reflectv, tuples.vector(0, math.sqrt_f64(2) / 2, math.sqrt_f64(2) / 2)), "reflect vector is incorrect.")
 }
+
+@(test)
+find_n1_and_n2 :: proc(t: ^testing.T) {
+	a := shape.glass_sphere()
+	at := transforms.get_scale_matrix(2, 2, 2)
+	shape.set_transform(&a, at)
+
+	b := shape.glass_sphere()
+	b.material.refractive_index = 2.0
+	bt := transforms.get_translation_matrix(0, 0, -0.25)
+	shape.set_transform(&b, bt)
+
+	c := shape.glass_sphere()
+	c.material.refractive_index = 2.5
+	ct := transforms.get_translation_matrix(0, 0, 0.25)
+	shape.set_transform(&c, ct)
+
+	r := rays.create_ray(tuples.point(0, 0, -4), tuples.vector(0, 0, 1))
+	
+	i1 := intersection.intersection(2, a)
+	i2 := intersection.intersection(2.75, b)
+	i3 := intersection.intersection(3.25, c)
+	i4 := intersection.intersection(4.75, b)
+	i5 := intersection.intersection(5.25, c)
+	i6 := intersection.intersection(6, a)
+
+	xs := intersection.aggregate_intersections(i1, i2, i3, i4, i5, i6)
+	defer delete(xs)
+
+	n1s := [6]f64{1.0, 1.5, 2.0, 2.5, 2.5, 1.5}
+	n2s := [6]f64{1.5, 2.0, 2.5, 2.5, 1.5, 1.0}
+
+	for i := 0; i < 6; i += 1 {
+		comps := intersection.prepare_computation(&xs[i], &r, &xs)
+		testing.expectf(t, utils.fp_equals(comps.n1, n1s[i]), "Incorrect n1 value at index %d. Got %f, Expected %f", i, comps.n1, n1s[i])
+		testing.expectf(t, utils.fp_equals(comps.n2, n2s[i]), "Incorrect n2 value at index %d. Got %f, Expected %f", i, comps.n2, n2s[i])
+	}
+}
+
+@(test)
+under_point :: proc(t: ^testing.T) {
+	r := rays.create_ray(tuples.point(0, 0, -5), tuples.vector(0, 0, 1))
+	s := shape.glass_sphere()
+	st := transforms.get_translation_matrix(0, 0, 1)
+	shape.set_transform(&s, st)
+
+	i := intersection.intersection(5, s)
+	xs := intersection.aggregate_intersections(i)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&i, &r, &xs)
+
+	testing.expectf(t, comps.under_point.z > utils.EPS / 2, "Under point is not correct. Got %f, Expected %f", comps.under_point.z, utils.EPS / 2)
+	testing.expectf(t, comps.point.z < comps.under_point.z, "Under point z is smaller than point z. Under point is %f, point is %f", comps.under_point.z, comps.point.z)
+}

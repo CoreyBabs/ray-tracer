@@ -32,6 +32,13 @@ set_transform :: proc(p: ^Pattern, transform: matrix[4,4]f64) {
 	p.transform = transform
 }
 
+pattern_equals :: proc(p1, p2: ^Pattern) -> bool {
+	return tuples.color_equals(p1.a, p2.a) &&
+		tuples.color_equals(p1.b, p2.b) &&
+		utils.matrix4_equals_f64(p1.transform, p2.transform) &&
+		p1.pattern == p2.pattern
+}
+
 is_empty :: proc(p: ^Pattern) -> bool {
 	return tuples.color_equals(p.a, p.b)
 }

@@ -16,6 +16,14 @@ sphere :: proc() -> Sphere {
 	return Sphere{1, tuples.point(0, 0, 0)}
 }
 
+// TODO: Move this out of sphere and into a more generic shape constructor file
+glass_sphere :: proc() -> Shape {
+	s := default_shape()
+	s.material.transparency = 1.0
+	s.material.refractive_index = 1.5
+	return s
+}
+
 sphere_equals :: proc(s1, s2: ^Sphere) -> bool {
 	return s1.radius == s2.radius && tuples.tuple_equals(s1.center, s2.center)
 }

@@ -68,6 +68,14 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return false
 	}
 
+	if !utils.matrix4_equals_f64(s1.transform, s2.transform) {
+		return false
+	}
+
+	if !light.material_equals(&s1.material, &s2.material) {
+		return false
+	}
+
 	switch &t in s1.shape {
 	case Sphere:
 		return sphere_equals(&s1.shape.(Sphere), &s2.shape.(Sphere))
@@ -76,4 +84,14 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 	case:
 		panic("Unknown shape type.")
 	}
+}
+
+shape_search :: proc(shapes: ^[dynamic]^Shape, value: ^Shape) -> (int, bool) {
+	for &x, i in shapes {
+		if shape_equals(&x^, value) {
+			return i, true
+		}
+	}
+
+	return -1, false
 }

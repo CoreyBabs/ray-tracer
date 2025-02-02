@@ -12,6 +12,13 @@ plane :: proc() -> Plane {
 	return Plane{}
 }
 
+plane_shape :: proc () -> Shape {
+	p := plane()
+	s := default_shape()
+	set_shape(&s, p)
+	return s
+}
+
 plane_equals :: proc(p1, p2: ^Plane) -> bool {
 	return true
 }

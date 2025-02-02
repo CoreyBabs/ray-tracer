@@ -1,5 +1,6 @@
 package world
 
+import "core:math"
 import "core:slice"
 import "src:features/intersection"
 import "src:features/light"
@@ -67,7 +68,9 @@ shade_hit :: proc(w: ^World, comps: ^intersection.Precompute, remaining: int = 5
 	in_shadow := is_shadowed(w, &comps.over_point)
 	surface := light.lighting(&comps.object.material, comps.object.transform, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
 	reflected := reflected_color(w, comps, remaining)
-	return tuples.add_colors(surface, reflected)
+	refracted := refracted_color(w, comps, remaining)
+	fc := tuples.add_colors(surface, reflected)
+	return tuples.add_colors(fc, refracted)
 }
 
 color_at :: proc(w: ^World, ray: ^rays.Ray, remaining: int = 5) -> tuples.Color {
@@ -79,7 +82,7 @@ color_at :: proc(w: ^World, ray: ^rays.Ray, remaining: int = 5) -> tuples.Color 
 		return tuples.color(0, 0, 0)
 	}
 
-	comps := intersection.prepare_computation(&hit, ray)
+	comps := intersection.prepare_computation(&hit, ray, &xs)
 	return shade_hit(w, &comps, remaining)
 }
 
@@ -118,6 +121,30 @@ reflected_color :: proc(w: ^World, comps: ^intersection.Precompute, remaining: i
 	reflected_ray := rays.create_ray(comps.over_point, comps.reflectv)
 	color := color_at(w, &reflected_ray, remaining - 1)
 	return tuples.color_scalar_multiply(color, comps.object.material.reflective)
+}
+
+refracted_color :: proc(w: ^World, comps: ^intersection.Precompute, remaining: int = 5) -> tuples.Color {
+	if remaining == 0 || comps.object.material.transparency == 0 {
+		return tuples.black()
+	}
+
+	n_ratio := comps.n1 / comps.n2
+	cos_i := tuples.dot(comps.eyev, comps.normalv)
+	sin2_t := n_ratio * n_ratio * (1 - cos_i * cos_i)
+
+	if sin2_t > 1 {
+		return tuples.black()
+	}
+
+	cos_t := math.sqrt_f64(1.0 - sin2_t)
+	ndir := tuples.scalar_multiply(comps.normalv, n_ratio * cos_i - cos_t)
+	eye_dir := tuples.scalar_multiply(comps.eyev, n_ratio)
+	dir := tuples.subtract_tuples(ndir, eye_dir)
+
+	ref_ray := rays.create_ray(comps.under_point, dir)
+
+	color := color_at(w, &ref_ray, remaining - 1)
+	return tuples.color_scalar_multiply(color, comps.object.material.transparency)
 }
 
 @(private)

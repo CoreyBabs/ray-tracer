@@ -134,3 +134,10 @@ default_reflection :: proc(t: ^testing.T) {
 	m := light.material()
 	testing.expect(t, utils.fp_equals(m.reflective, 0), "Default reflection is not correct.")
 }
+
+@(test)
+default_refraction :: proc(t: ^testing.T) {
+	m := light.material()
+	testing.expect(t, utils.fp_equals(m.transparency, 0), "Default transparency is not correct.")
+	testing.expect(t, utils.fp_equals(m.refractive_index, 1.0), "Default refractive index is not correct.")
+}

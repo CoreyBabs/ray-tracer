@@ -26,8 +26,9 @@ shape_change_transform :: proc(t: ^testing.T) {
 @(test)
 shape_default_material :: proc(t: ^testing.T) {
 	s := shape.default_shape()
+	m := light.material()
 
-	testing.expect(t, light.material_equals(s.material, light.material()), "shape default material is incorrect.")
+	testing.expect(t, light.material_equals(&s.material, &m), "shape default material is incorrect.")
 }
 
 @(test)
@@ -36,7 +37,7 @@ shape_material :: proc(t: ^testing.T) {
 	m := light.material(1.0)
 	shape.set_material(&s, m)
 
-	testing.expect(t, light.material_equals(s.material, m), "shape material is incorrect.")
+	testing.expect(t, light.material_equals(&s.material, &m), "shape material is incorrect.")
 	testing.expect(t, utils.fp_equals(s.material.ambient, 1.0), "shape material is incorrect.")
 }
 
