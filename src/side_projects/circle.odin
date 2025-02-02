@@ -54,7 +54,7 @@ floor :: proc() -> shape.Shape {
 	transform := transforms.get_scale_matrix(2, 2, 2)
 	patterns.set_transform(&pattern, transform)
 
-	mat := light.material(spec=0, reflective=1)
+	mat := light.material(spec=0, reflective=1, transparency=0.5, refractive_index=1.5)
 	light.set_material_color(&mat, tuples.color(1, 0.9, 0.9))
 	light.set_material_pattern(&mat, pattern)
 
@@ -134,7 +134,7 @@ left :: proc() -> shape.Shape {
 	ptransform := transforms.get_scale_matrix(0.5, 0.5, 0.5)
 	patterns.set_transform(&pattern, ptransform)
 
-	mat := light.material(d=0.7, spec=0.3)
+	mat := light.material(d=0.7, spec=0.3, transparency=0.75)
 	light.set_material_color(&mat, tuples.color(1, 0.8, 0.1))
 	light.set_material_pattern(&mat, pattern)
 

@@ -7,6 +7,7 @@ import "src:features/rays"
 import "src:features/shape"
 import "src:features/transforms"
 import "src:features/tuples"
+import "src:features/world"
 import utils "src:utilities"
 
 
@@ -358,4 +359,51 @@ under_point :: proc(t: ^testing.T) {
 
 	testing.expectf(t, comps.under_point.z > utils.EPS / 2, "Under point is not correct. Got %f, Expected %f", comps.under_point.z, utils.EPS / 2)
 	testing.expectf(t, comps.point.z < comps.under_point.z, "Under point z is smaller than point z. Under point is %f, point is %f", comps.under_point.z, comps.point.z)
+}
+
+@(test)
+schlick_approx_with_total_internal_reflection :: proc(t: ^testing.T) {
+	s := shape.glass_sphere()
+	r := rays.create_ray(tuples.point(0, 0, math.sqrt_f64(2)/2), tuples.vector(0, 1, 0))
+
+	i1 := intersection.intersection(-math.sqrt_f64(2)/2, s)
+	i2 := intersection.intersection(math.sqrt_f64(2)/2, s)
+	xs := intersection.aggregate_intersections(i1, i2)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[1], &r, &xs)
+	reflectance := world.schlick(&comps)
+
+	testing.expectf(t, utils.fp_equals(reflectance, 1.0), "Reflectance is incorrect. Got %v, Expected 1.0")
+}
+
+@(test)
+schlick_perpendicular :: proc(t: ^testing.T) {
+	s := shape.glass_sphere()
+	r := rays.create_ray(tuples.point(0, 0, 0), tuples.vector(0, 1, 0))
+
+	i1 := intersection.intersection(-1, s)
+	i2 := intersection.intersection(1, s)
+	xs := intersection.aggregate_intersections(i1, i2)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[1], &r, &xs)
+	reflectance := world.schlick(&comps)
+
+	testing.expectf(t, utils.fp_equals(reflectance, 0.04), "Reflectance is incorrect. Got %v, Expected 0.04")
+}
+
+@(test)
+schlick_small_angle :: proc(t: ^testing.T) {
+	s := shape.glass_sphere()
+	r := rays.create_ray(tuples.point(0, 0.99, -2), tuples.vector(0, 0, 1))
+
+	i1 := intersection.intersection(1.8589, s)
+	xs := intersection.aggregate_intersections(i1)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[0], &r, &xs)
+	reflectance := world.schlick(&comps)
+
+	testing.expectf(t, utils.fp_equals(reflectance, 0.48873), "Reflectance is incorrect. Got %v, Expected 0.48873")
 }

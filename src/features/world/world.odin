@@ -69,6 +69,14 @@ shade_hit :: proc(w: ^World, comps: ^intersection.Precompute, remaining: int = 5
 	surface := light.lighting(&comps.object.material, comps.object.transform, &w.light, comps.over_point, comps.eyev, comps.normalv, in_shadow)
 	reflected := reflected_color(w, comps, remaining)
 	refracted := refracted_color(w, comps, remaining)
+
+	if comps.object.material.reflective > 0 && comps.object.material.transparency > 0 {
+		reflectance := schlick(comps)
+		fc := tuples.add_colors(surface, tuples.color_scalar_multiply(reflected, reflectance))
+		fc = tuples.add_colors(fc, tuples.color_scalar_multiply(refracted, 1.0 - reflectance))
+		return fc
+	}
+
 	fc := tuples.add_colors(surface, reflected)
 	return tuples.add_colors(fc, refracted)
 }
@@ -145,6 +153,24 @@ refracted_color :: proc(w: ^World, comps: ^intersection.Precompute, remaining: i
 
 	color := color_at(w, &ref_ray, remaining - 1)
 	return tuples.color_scalar_multiply(color, comps.object.material.transparency)
+}
+
+schlick :: proc(comps: ^intersection.Precompute) -> f64 {
+	cos_i := tuples.dot(comps.eyev, comps.normalv)
+	if comps.n1 > comps.n2 {
+		n_ratio := comps.n1 / comps.n2
+		sin2_t := n_ratio * n_ratio * (1 - cos_i * cos_i)
+
+		if sin2_t > 1.0 {
+			return 1.0
+		}
+
+		cos_t := math.sqrt(1.0 - sin2_t)
+		cos_i = cos_t
+	}
+
+	r0 := math.pow((comps.n1 - comps.n2) / (comps.n1 + comps.n2), 2)
+	return r0 + (1 - r0) * math.pow((1 - cos_i), 5)
 }
 
 @(private)

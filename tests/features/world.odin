@@ -392,3 +392,37 @@ shade_hit_with_refraction :: proc(t : ^testing.T) {
 
 	testing.expectf(t, tuples.color_equals(c, ec), "Refracted color from shade hit is incorrect. Got %v, expected %v", c, ec)
 }
+
+@(test)
+shade_hit_with_schlick :: proc(t : ^testing.T) {
+	w := world.default_world()
+	defer world.delete_world(&w)
+
+	floor := shape.plane_shape()
+	ft := transforms.get_translation_matrix(0, -1, 0)
+	shape.set_transform(&floor, ft)
+	floor.material.reflective = 0.5
+	floor.material.transparency = 0.5
+	floor.material.refractive_index = 1.5
+
+	ball := shape.default_shape()
+	ball.material.color = tuples.color(1, 0, 0)
+	ball.material.ambient = 0.5
+	bt := transforms.get_translation_matrix(0, -3.5, -0.5)
+	shape.set_transform(&ball, bt)
+
+	world.add_object(&w, floor)
+	world.add_object(&w, ball)
+
+	r := rays.create_ray(tuples.point(0, 0, -3), tuples.vector(0, -math.sqrt_f64(2)/2, math.sqrt_f64(2)/2))
+	
+	i := intersection.intersection(math.sqrt_f64(2), floor)
+	xs := intersection.aggregate_intersections(i)
+	defer delete(xs)
+
+	comps := intersection.prepare_computation(&xs[0], &r, &xs)
+	c := world.shade_hit(&w, &comps, 5)
+	ec := tuples.color(0.93391, 0.69643, 0.69243)
+
+	testing.expectf(t, tuples.color_equals(c, ec), "Color from shade hit with Schlick is incorrect. Got %v, expected %v", c, ec)
+}
