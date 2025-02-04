@@ -110,7 +110,9 @@ middle :: proc() -> shape.Shape {
 
 right :: proc() -> shape.Shape {
 	right := shape.default_shape()
-	transform := transforms.get_translation_matrix(1.5, 0.5, -0.5) * transforms.get_scale_matrix(0.5, 0.5, 0.5)
+	cyl := shape.cylinder(-2, 4, true)
+	shape.set_shape(&right, cyl)
+	transform := transforms.get_rotation_matrix(45, .X) * transforms.get_translation_matrix(1.5, 0.5, -0.5) * transforms.get_scale_matrix(0.5, 0.5, 0.5)
 
 	pattern := patterns.checker(tuples.color(1, 0.6, 0), tuples.white())
 	ptransform := transforms.get_scale_matrix(0.5, 0.5, 0.5)

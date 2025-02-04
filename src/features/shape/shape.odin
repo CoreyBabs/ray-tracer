@@ -10,6 +10,7 @@ ShapeType :: union {
 	Sphere,
 	Plane,
 	Cube,
+	Cylinder
 }
 
 Shape :: struct {
@@ -45,6 +46,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 		shape_normal = plane_normal_at(&t, obj_p)
 	case Cube:
 		shape_normal = cube_normal_at(&t, obj_p)
+	case Cylinder:
+		shape_normal = cylinder_normal_at(&t, obj_p)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -63,6 +66,8 @@ intersect :: proc(s: ^Shape, ray: rays.Ray) -> []f64 {
 		return plane_intersect(&t, &s.ray)
 	case Cube:
 		return cube_intersect(&t, &s.ray)
+	case Cylinder:
+		return cylinder_intersect(&t, &s.ray)
 	case:
 		panic("Unknown shape type. %v")
 	}
@@ -88,6 +93,8 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return plane_equals(&s1.shape.(Plane), &s2.shape.(Plane))
 	case Cube:
 		return cube_equals(&s1.shape.(Cube), &s2.shape.(Cube))
+	case Cylinder:
+		return cylinder_equals(&s1.shape.(Cylinder), &s2.shape.(Cylinder))
 	case:
 		panic("Unknown shape type.")
 	}
