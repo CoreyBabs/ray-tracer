@@ -6,34 +6,34 @@ import "src:features/rays"
 import "src:features/tuples"
 import utils "src:utilities"
 
-Cylinder :: struct {
+Cone :: struct {
 	min: f64,
 	max: f64,
 	closed: bool,
 }
 
-cylinder :: proc(min, max: f64, closed: bool = false) -> Cylinder {
-	return Cylinder{min, max, closed}
+cone :: proc(min, max: f64, closed: bool = false) -> Cone {
+	return Cone{min, max, closed}
 }
 
-default_cylinder :: proc() -> Cylinder {
-	return Cylinder{math.inf_f64(-1), math.inf_f64(1), false}
+default_cone :: proc() -> Cone {
+	return Cone{math.inf_f64(-1), math.inf_f64(1), false}
 }
 
-cylinder_shape :: proc () -> Shape {
-	c := default_cylinder()
+cone_shape :: proc () -> Shape {
+	c := default_cone()
 	s := default_shape()
 	set_shape(&s, c)
 	return s
 }
 
-cylinder_equals :: proc(p1, p2: ^Cylinder) -> bool {
+cone_equals :: proc(p1, p2: ^Cone) -> bool {
 	return true
 }
 
 
 @(private)
-cylinder_normal_at :: proc(s: ^Cylinder, p: tuples.Tuple) -> tuples.Tuple {
+cone_normal_at :: proc(s: ^Cone, p: tuples.Tuple) -> tuples.Tuple {
 	dist := p.x * p.x + p.z * p.z
 	if dist < 1 && p.y >= s.max - utils.EPS {
 		return tuples.vector(0, 1, 0)
@@ -43,15 +43,20 @@ cylinder_normal_at :: proc(s: ^Cylinder, p: tuples.Tuple) -> tuples.Tuple {
 		return tuples.vector(0, -1, 0)
 	}
 
-	return tuples.vector(p.x, 0, p.z)
+	y := math.sqrt_f64(dist)
+	if p.y > 0 {
+		y *= -1
+	}
+
+	return tuples.vector(p.x, y, p.z)
 }
 
 @(private)
-cylinder_intersect :: proc(s: ^Cylinder, ray: ^rays.Ray) -> []f64 {
-	a := ray.direction.x * ray.direction.x + ray.direction.z * ray.direction.z
+cone_intersect :: proc(s: ^Cone, ray: ^rays.Ray) -> []f64 {
+	a := ray.direction.x * ray.direction.x - ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z
 	
-	b := 2 * ray.origin.x * ray.direction.x + 2 * ray.origin.z * ray.direction.z
-	c := ray.origin.x * ray.origin.x + ray.origin.z * ray.origin.z - 1
+	b := 2 * ray.origin.x * ray.direction.x - 2 * ray.origin.y * ray.direction.y + 2 * ray.origin.z * ray.direction.z
+	c := ray.origin.x * ray.origin.x - ray.origin.y * ray.origin.y + ray.origin.z * ray.origin.z
 
 	disc := b * b - 4 * a * c
 	if disc < 0 {
@@ -79,32 +84,35 @@ cylinder_intersect :: proc(s: ^Cylinder, ray: ^rays.Ray) -> []f64 {
 			append(&ts, t1)
 		}
 	}
+	else if !utils.fp_zero(b) {
+		append(&ts, -c/(2 * b))
+	}
 
-	intersect_caps(s, ray, &ts)
+	intersect_cone_caps(s, ray, &ts)
 
 	return ts[:]
 }
 
 @(private)
-intersect_caps :: proc(cyl: ^Cylinder, r: ^rays.Ray, ts: ^[dynamic]f64) {
+intersect_cone_caps :: proc(cyl: ^Cone, r: ^rays.Ray, ts: ^[dynamic]f64) {
 	if !cyl.closed || utils.fp_zero(r.direction.y) {
 		return
 	}
 
 	t := (cyl.min - r.origin.y) / r.direction.y
-	if check_cap(r, t) {
+	if check_cone_cap(r, t, cyl.min) {
 		append(ts, t)
 	}
 
 	t = (cyl.max - r.origin.y) / r.direction.y
-	if check_cap(r, t) {
+	if check_cone_cap(r, t, cyl.max) {
 		append(ts, t)
 	}
 }  
 
 @(private)
-check_cap :: proc(r: ^rays.Ray, t: f64) -> bool {
+check_cone_cap :: proc(r: ^rays.Ray, t, y: f64,) -> bool {
 	x := r.origin.x + t * r.direction.x
 	z := r.origin.z + t * r.direction.z
-	return (x*x + z*z) <= 1
+	return (x*x + z*z) <= abs(y)
 }

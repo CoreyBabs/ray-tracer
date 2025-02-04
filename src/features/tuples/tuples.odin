@@ -39,6 +39,10 @@ scalar_multiply :: proc(a: Tuple, scalar: f64) -> Tuple {
 }
 
 scalar_divide :: proc(a: Tuple, scalar: f64) -> Tuple {
+	if utils.fp_zero(scalar) {
+		return 0
+	}
+
 	return a / scalar
 }
 
