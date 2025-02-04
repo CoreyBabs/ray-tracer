@@ -9,6 +9,7 @@ import utils "src:utilities"
 ShapeType :: union {
 	Sphere,
 	Plane,
+	Cube,
 }
 
 Shape :: struct {
@@ -42,6 +43,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 		shape_normal = sphere_normal_at(&t, obj_p)
 	case Plane:
 		shape_normal = plane_normal_at(&t, obj_p)
+	case Cube:
+		shape_normal = cube_normal_at(&t, obj_p)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -58,8 +61,10 @@ intersect :: proc(s: ^Shape, ray: rays.Ray) -> []f64 {
 		return sphere_intersect(&t, &s.ray)
 	case Plane:
 		return plane_intersect(&t, &s.ray)
+	case Cube:
+		return cube_intersect(&t, &s.ray)
 	case:
-		panic("Unknown shape type.")
+		panic("Unknown shape type. %v")
 	}
 }
 
@@ -81,6 +86,8 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return sphere_equals(&s1.shape.(Sphere), &s2.shape.(Sphere))
 	case Plane:
 		return plane_equals(&s1.shape.(Plane), &s2.shape.(Plane))
+	case Cube:
+		return cube_equals(&s1.shape.(Cube), &s2.shape.(Cube))
 	case:
 		panic("Unknown shape type.")
 	}

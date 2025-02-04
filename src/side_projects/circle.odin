@@ -127,7 +127,7 @@ right :: proc() -> shape.Shape {
 }
 
 left :: proc() -> shape.Shape {
-	left := shape.default_shape()
+	left := shape.cube_shape()
 	transform := transforms.get_translation_matrix(-1.5, 0.33, -0.75) * transforms.get_scale_matrix(0.33, 0.33, 0.33)
 
 	pattern := patterns.ring(tuples.color(1, 0.8, 0.1), tuples.black())
