@@ -38,7 +38,7 @@ cube_normal_at :: proc(s: ^Cube, p: tuples.Tuple) -> tuples.Tuple {
 }
 
 @(private)
-cube_intersect :: proc(s: ^Cube, ray: ^rays.Ray) -> []f64 {
+cube_intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 	xtmin, xtmax := check_axis(ray.origin.x, ray.direction.x)
 	ytmin, ytmax := check_axis(ray.origin.y, ray.direction.y)
 	ztmin, ztmax := check_axis(ray.origin.z, ray.direction.z)
@@ -51,15 +51,20 @@ cube_intersect :: proc(s: ^Cube, ray: ^rays.Ray) -> []f64 {
 	}
 
 	ts := make([]f64, 2, context.allocator)
+	defer delete(ts)
 	ts[0] = tmin
 	ts[1] = tmax
-	return ts
+
+	
+	m := make(map[^Shape][]f64)
+	m[s] = ts
+	return m
 }
 
 @(private)
-check_axis :: proc(origin, direction: f64) -> (f64, f64) {
-	tmin_numerator := (-1 - origin)
-	tmax_numerator := (1 - origin)
+check_axis :: proc(origin, direction: f64, min: f64 = -1, max: f64 = 1) -> (f64, f64) {
+	tmin_numerator := (min - origin)
+	tmax_numerator := (max - origin)
 
 	tmin, tmax: f64
 	if abs(direction) >= utils.EPS {

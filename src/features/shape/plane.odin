@@ -30,7 +30,7 @@ plane_normal_at :: proc(s: ^Plane, p: tuples.Tuple) -> tuples.Tuple {
 }
 
 @(private)
-plane_intersect :: proc(s: ^Plane, ray: ^rays.Ray) -> []f64 {
+plane_intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 	if math.abs(ray.direction.y) < utils.EPS {
 		return nil
 	}
@@ -38,5 +38,9 @@ plane_intersect :: proc(s: ^Plane, ray: ^rays.Ray) -> []f64 {
 	t := -ray.origin.y / ray.direction.y
 	ts := make([]f64, 1, context.allocator)
 	ts[0] = t
-	return ts
+	
+
+	m := make(map[^Shape][]f64)
+	m[s] = ts
+	return m
 }

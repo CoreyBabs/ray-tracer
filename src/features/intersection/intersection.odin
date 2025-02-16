@@ -2,6 +2,7 @@ package intersection
 
 import "core:math"
 import "core:math/linalg"
+import "core:slice"
 import "src:features/rays"
 import "src:features/shape"
 import "src:features/tuples"
@@ -36,17 +37,29 @@ aggregate_ts :: proc(s: ^shape.Shape, ts: ..f64) -> [dynamic]Intersection {
 	return aggregate
 }
 
-intersect :: proc(s: ^shape.Shape, ray: ^rays.Ray) -> [dynamic]Intersection {
-	transformed_ray := rays.transform(ray, linalg.inverse(s.transform))
+aggregate_and_sort_ts :: proc(m: ^map[^shape.Shape][]f64) -> [dynamic]Intersection {
+	aggregate: [dynamic]Intersection
 
-	ts := shape.intersect(s, transformed_ray)
+	for key, values in m {
+		for t in values {
+			append(&aggregate, intersection(t, key^))
+		}
+	}
+
+	slice.sort_by(aggregate[:], sort)
+	return aggregate
+}
+
+intersect :: proc(s: ^shape.Shape, ray: ^rays.Ray) -> [dynamic]Intersection {
+	ts := shape.intersect(s, ray)
+	defer utils.free_map(&ts)
 	defer delete(ts)
 
 	if ts == nil {
 		return nil
 	}
 
-	return aggregate_ts(s, ..ts)
+	return aggregate_and_sort_ts(&ts)
 }
 
 hit :: proc(intersections: [dynamic]Intersection) -> (Intersection, bool) {
@@ -64,4 +77,8 @@ hit :: proc(intersections: [dynamic]Intersection) -> (Intersection, bool) {
 	}
 
 	return hit, found
+}
+
+sort :: proc(i1, i2: Intersection) -> bool {
+	return i1.t < i2.t
 }

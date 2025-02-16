@@ -60,7 +60,8 @@ checker :: proc(a, b: tuples.Color) -> Pattern {
 }
 
 // The obj param should be a shape, but given the current project setup, this would 
-// create a circular dependency so it uses the shapes transform directly instead
+// create a circular dependency so it uses the shapes transform directly instead.
+// A downside/bug that results from this is that patterns do not work correctly on groups.
 pattern_at_shape :: proc(p: ^Pattern, obj_transform: matrix[4,4]f64, point: tuples.Tuple) -> tuples.Color {
 	obj_point := linalg.inverse(obj_transform) * point
 	pattern_point := linalg.inverse(p.transform) * obj_point

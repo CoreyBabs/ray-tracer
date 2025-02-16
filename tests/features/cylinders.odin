@@ -24,7 +24,8 @@ cylinder_miss :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&cyl, r)
+		ts := shape.intersect(&cyl, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 
 		testing.expectf(t, ts == nil, "ts at index %v is incorrect. Expected: nil, Got: %v", i, ts) 
@@ -50,11 +51,12 @@ cylinder_hit :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&cyl, r)
+		ts := shape.intersect(&cyl, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 
-		testing.expectf(t, utils.fp_equals(ts[0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], ts[0]) 
-		testing.expectf(t, utils.fp_equals(ts[1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], ts[1]) 
+		testing.expectf(t, utils.fp_equals(ts[&cyl][0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], ts[&cyl][0]) 
+		testing.expectf(t, utils.fp_equals(ts[&cyl][1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], ts[&cyl][1]) 
 	}
 }
 
@@ -116,10 +118,11 @@ truncated_cylinder :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&s, r)
+		ts := shape.intersect(&s, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 		
-		testing.expectf(t, len(ts) == ex, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts), ex)
+		testing.expectf(t, len(ts[&s]) == ex, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts[&s]), ex)
 	}
 }
 
@@ -152,10 +155,11 @@ closed_cylinder_intersection :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&s, r)
+		ts := shape.intersect(&s, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 		
-		testing.expectf(t, len(ts) == 2, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts), 2)
+		testing.expectf(t, len(ts[&s]) == 2, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts[&s]), 2)
 	}
 }
 

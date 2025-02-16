@@ -37,3 +37,9 @@ matrix4_identity :: proc() -> matrix[4,4]f64 {
 
 	return identity
 }
+
+free_map :: proc(m: ^map[$T]$N) {
+	for k, v in m {
+		delete(v)
+	}
+}

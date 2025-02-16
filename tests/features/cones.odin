@@ -26,12 +26,13 @@ cone_intersection :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&s, r)
+		ts := shape.intersect(&s, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 
-		testing.expectf(t, len(ts) == 2, "cone intersection does not have 2 t values. ts: %v", ts)
-		testing.expectf(t, utils.fp_equals(ts[0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], ts[0]) 
-		testing.expectf(t, utils.fp_equals(ts[1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], ts[1]) 
+		testing.expectf(t, len(ts[&s]) == 2, "cone intersection does not have 2 t values. ts: %v", ts[&s])
+		testing.expectf(t, utils.fp_equals(ts[&s][0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], ts[&s][0]) 
+		testing.expectf(t, utils.fp_equals(ts[&s][1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], ts[&s][1]) 
 	}
 }
 
@@ -42,11 +43,12 @@ cone_parallel :: proc(t: ^testing.T) {
 	dir := tuples.normalize(tuples.vector(0, 1, 1))
 	r := rays.create_ray(tuples.point(0, 0, -1), dir)
 
-	ts := shape.intersect(&s, r)
+	ts := shape.intersect(&s, &r)
+	defer utils.free_map(&ts)
 	defer delete(ts)
 
-	testing.expectf(t, len(ts) == 1, "parallel cone intersection does not have 1 t values. ts: %v", ts)
-	testing.expectf(t, utils.fp_equals(ts[0], 0.35355), "t value for parallel intersection is incorrect. Expected: %f, Got: %f", 0.35355, ts[0]) 
+	testing.expectf(t, len(ts[&s]) == 1, "parallel cone intersection does not have 1 t values. ts: %v", ts[&s])
+	testing.expectf(t, utils.fp_equals(ts[&s][0], 0.35355), "t value for parallel intersection is incorrect. Expected: %f, Got: %f", 0.35355, ts[&s][0]) 
 }
 
 @(test)
@@ -68,10 +70,11 @@ cone_caps :: proc(t: ^testing.T) {
 		dir := tuples.normalize(dirs[i])
 		r := rays.create_ray(origins[i], dir)
 
-		ts := shape.intersect(&s, r)
+		ts := shape.intersect(&s, &r)
+		defer utils.free_map(&ts)
 		defer delete(ts)
 		
-		testing.expectf(t, len(ts) == i * 2, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts), i * 2)
+		testing.expectf(t, len(ts[&s]) == i * 2, "Count of t values is incorrect at %v, Got %v, Expected %v", i, len(ts[&s]), i * 2)
 	}
 }
 

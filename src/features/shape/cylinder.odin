@@ -47,7 +47,7 @@ cylinder_normal_at :: proc(s: ^Cylinder, p: tuples.Tuple) -> tuples.Tuple {
 }
 
 @(private)
-cylinder_intersect :: proc(s: ^Cylinder, ray: ^rays.Ray) -> []f64 {
+cylinder_intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 	a := ray.direction.x * ray.direction.x + ray.direction.z * ray.direction.z
 	
 	b := 2 * ray.origin.x * ray.direction.x + 2 * ray.origin.z * ray.direction.z
@@ -67,22 +67,30 @@ cylinder_intersect :: proc(s: ^Cylinder, ray: ^rays.Ray) -> []f64 {
 	}
 
 	ts : [dynamic]f64
-	
+
+	cyl := s.shape.(Cylinder)	
+
 	if !utils.fp_zero(a) {
 		y0 := ray.origin.y + t0 * ray.direction.y
-		if s.min < y0 && y0 < s.max {
+		if cyl.min < y0 && y0 < cyl.max {
 			append(&ts, t0)
 		}
 		
 		y1 := ray.origin.y + t1 * ray.direction.y
-		if s.min < y1 && y1 < s.max {
+		if cyl.min < y1 && y1 < cyl.max {
 			append(&ts, t1)
 		}
 	}
 
-	intersect_caps(s, ray, &ts)
+	intersect_caps(&cyl, ray, &ts)
 
-	return ts[:]
+	if len(ts) == 0 {
+		return nil
+	}
+
+	m := make(map[^Shape][]f64)
+	m[s] = ts[:]
+	return m
 }
 
 @(private)

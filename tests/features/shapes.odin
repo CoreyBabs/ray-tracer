@@ -68,3 +68,77 @@ shape_normal_transformed :: proc(t: ^testing.T) {
 	testing.expectf(t, tuples.tuple_equals(n, expected_n), "Normal on transformed shape is incorrect. Got %f, %f, %f, %f", n[0], n[1], n[2], n[3])
 }
 
+@(test)
+shape_parent :: proc(t: ^testing.T) {
+	s := shape.default_shape()
+	testing.expect(t, s.parent == nil, "Default shape parent is not nil")
+}
+
+@(test)
+world_to_object_space :: proc(t: ^testing.T) {
+	g1 := shape.group_shape()
+	defer shape.free_group(&g1.shape.(shape.Group))
+	shape.set_transform(&g1, transforms.get_rotation_matrix(math.PI / 2, .Y))
+
+	g2 := shape.group_shape()
+	defer shape.free_group(&g2.shape.(shape.Group))
+
+	shape.set_transform(&g2, transforms.get_scale_matrix(2, 2, 2))
+
+	shape.add_shape_to_group(&g1, &g2)
+
+	s := shape.default_shape()
+	shape.set_transform(&s, transforms.get_translation_matrix(5, 0, 0))
+	shape.add_shape_to_group(&g2, &s)
+
+	p := shape.world_to_object(&s, tuples.point(-2, 0, -10))
+
+	testing.expectf(t, tuples.tuple_equals(p, tuples.point(0, 0, -1)), "world to object space is incorrect. Expected: %v, Got: %v, Shape: %v", tuples.point(0, 0, -1), p, s)
+}
+
+@(test)
+object_to_world_space :: proc(t: ^testing.T) {
+	g1 := shape.group_shape()
+	defer shape.free_group(&g1.shape.(shape.Group))
+	shape.set_transform(&g1, transforms.get_rotation_matrix(math.PI / 2, .Y))
+
+	g2 := shape.group_shape()
+	defer shape.free_group(&g2.shape.(shape.Group))
+
+	shape.set_transform(&g2, transforms.get_scale_matrix(1, 2, 3))
+
+	shape.add_shape_to_group(&g1, &g2)
+
+	s := shape.default_shape()
+	shape.set_transform(&s, transforms.get_translation_matrix(5, 0, 0))
+	shape.add_shape_to_group(&g2, &s)
+
+	v: f64 = math.sqrt_f64(3) / 3
+	n := shape.normal_to_world(&s, tuples.vector(v, v, v))
+	expected := tuples.vector(0.28571, 0.42857, -0.85714)
+
+	testing.expectf(t, tuples.tuple_equals(n, expected), "object to world space is incorrect. Expected: %v, Got: %v", expected, n)
+}
+
+@(test)
+normal_on_child_object :: proc(t: ^testing.T) {
+	g1 := shape.group_shape()
+	defer shape.free_group(&g1.shape.(shape.Group))
+	shape.set_transform(&g1, transforms.get_rotation_matrix(math.PI / 2, .Y))
+
+	g2 := shape.group_shape()
+	defer shape.free_group(&g2.shape.(shape.Group))
+
+	shape.set_transform(&g2, transforms.get_scale_matrix(1, 2, 3))
+
+	shape.add_shape_to_group(&g1, &g2)
+
+	s := shape.default_shape()
+	shape.set_transform(&s, transforms.get_translation_matrix(5, 0, 0))
+	shape.add_shape_to_group(&g2, &s)
+
+	n := shape.normal_at(&s, tuples.point(1.7321, 1.1547, -5.5774))
+	expected := tuples.vector(0.28570, 0.42854, -0.85716)
+
+	testing.expectf(t, tuples.tuple_equals(n, expected), "Child normal is incorrect. Expected: %v, Got: %v", expected, n)
+}

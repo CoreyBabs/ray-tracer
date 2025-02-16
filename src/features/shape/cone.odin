@@ -52,7 +52,7 @@ cone_normal_at :: proc(s: ^Cone, p: tuples.Tuple) -> tuples.Tuple {
 }
 
 @(private)
-cone_intersect :: proc(s: ^Cone, ray: ^rays.Ray) -> []f64 {
+cone_intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 	a := ray.direction.x * ray.direction.x - ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z
 	
 	b := 2 * ray.origin.x * ray.direction.x - 2 * ray.origin.y * ray.direction.y + 2 * ray.origin.z * ray.direction.z
@@ -72,15 +72,17 @@ cone_intersect :: proc(s: ^Cone, ray: ^rays.Ray) -> []f64 {
 	}
 
 	ts : [dynamic]f64
+
+	co := s.shape.(Cone)
 	
 	if !utils.fp_zero(a) {
 		y0 := ray.origin.y + t0 * ray.direction.y
-		if s.min < y0 && y0 < s.max {
+		if co.min < y0 && y0 < co.max {
 			append(&ts, t0)
 		}
 		
 		y1 := ray.origin.y + t1 * ray.direction.y
-		if s.min < y1 && y1 < s.max {
+		if co.min < y1 && y1 < co.max {
 			append(&ts, t1)
 		}
 	}
@@ -88,9 +90,10 @@ cone_intersect :: proc(s: ^Cone, ray: ^rays.Ray) -> []f64 {
 		append(&ts, -c/(2 * b))
 	}
 
-	intersect_cone_caps(s, ray, &ts)
-
-	return ts[:]
+	intersect_cone_caps(&co, ray, &ts)
+	m := make(map[^Shape][]f64)
+	m[s] = ts[:]
+	return m
 }
 
 @(private)

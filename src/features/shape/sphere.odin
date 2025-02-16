@@ -35,14 +35,13 @@ sphere_normal_at :: proc(s: ^Sphere, p: tuples.Tuple) -> tuples.Tuple {
 }
 
 @(private)
-sphere_intersect :: proc(s: ^Sphere, ray: ^rays.Ray) -> []f64 {
-	sphere_to_ray := tuples.subtract_tuples(ray.origin, s.center)
+sphere_intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
+	sphere_to_ray := tuples.subtract_tuples(ray.origin, s.shape.(Sphere).center)
 
 	a := tuples.dot(ray.direction, ray.direction)
 	b := 2 * tuples.dot(ray.direction, sphere_to_ray)
 	c := tuples.dot(sphere_to_ray, sphere_to_ray) - 1
 
-	test := math.pow(b, 2)
 	other := 4 * a * c
 	discriminant := math.pow(b, 2) - (4 * a * c)
 	if discriminant < 0 {
@@ -53,7 +52,11 @@ sphere_intersect :: proc(s: ^Sphere, ray: ^rays.Ray) -> []f64 {
 	t2 := (-b + math.sqrt(discriminant)) / (2 * a)
 	
 	ts := make([]f64, 2, context.allocator)
+	// defer delete(ts)
 	ts[0] = t1
 	ts[1] = t2
-	return ts
+
+	m := make(map[^Shape][]f64)
+	m[s] = ts
+	return m
 }

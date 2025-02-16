@@ -31,11 +31,11 @@ cube_intersection :: proc(t: ^testing.T) {
 
 	for i in 0..<7 {
 		r := rays.create_ray(origins[i], dirs[i])
-		xs := shape.intersect(&c, r)
+		xs := shape.intersect(&c, &r)
 		defer delete(xs)
 
-		testing.expectf(t, utils.fp_equals(xs[0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], xs[0]) 
-		testing.expectf(t, utils.fp_equals(xs[1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], xs[1]) 
+		testing.expectf(t, utils.fp_equals(xs[&c][0], t1s[i]), "t1 at index %v is incorrect. Expected: %f, Got: %f", i, t1s[i], xs[&c][0]) 
+		testing.expectf(t, utils.fp_equals(xs[&c][1], t2s[i]), "t2 at index %v is incorrect. Expected: %f, Got: %f", i, t2s[i], xs[&c][1]) 
 	}
 }
 
@@ -62,7 +62,7 @@ cube_miss :: proc(t: ^testing.T) {
 
 	for i in 0..<6 {
 		r := rays.create_ray(origins[i], dirs[i])
-		xs := shape.intersect(&c, r)
+		xs := shape.intersect(&c, &r)
 		defer delete(xs)
 
 		testing.expectf(t, xs == nil, "xs are not nil at index %v is incorrect. Got: %v", i, xs) 
