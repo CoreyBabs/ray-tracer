@@ -15,8 +15,8 @@ import "src:features/world"
 
 hexagon_scene :: proc() {
 	s := hexagon()
-	defer free_group_list(&s)
 	defer delete(s)
+	defer free_group_list(&s)
 
 	light_position := tuples.point(2, 10, -5)
 	light_color := tuples.white()

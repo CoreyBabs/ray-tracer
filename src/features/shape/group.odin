@@ -33,8 +33,9 @@ free_shape :: proc(s: ^Shape) {
 		}
 
 		delete(t.shapes)
+		free(s)
 	case:
-		free(&t)
+		free(s)
 	}
 }
 

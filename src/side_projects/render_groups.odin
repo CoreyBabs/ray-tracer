@@ -15,8 +15,8 @@ import "src:features/world"
 
 group_scene :: proc() {
 	s := build_group()
-	defer free_group_list(&s)
 	defer delete(s)
+	defer free_group_list(&s)
 
 	light_position := tuples.point(2, 10, -5)
 	light_color := tuples.white()
@@ -74,10 +74,6 @@ horizontal_group :: proc() -> ^shape.Shape {
 
 @(private)
 build_group :: proc() -> [dynamic]^shape.Shape {
-	b := shape.new_shape()
-	g := shape.group()
-	shape.set_shape(b, g)
-
 	v := vertical_group()
 	h := horizontal_group()
 
@@ -91,7 +87,7 @@ build_group :: proc() -> [dynamic]^shape.Shape {
 @(private)
 free_group_list :: proc(list: ^[dynamic]^shape.Shape) {
 	for l in list {
-		shape.free_group(&l.shape.(shape.Group))
+		shape.free_shape(l)
 	}
 }
 
