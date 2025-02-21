@@ -14,6 +14,12 @@ then
 	exit 0
 fi
 
+if [[ $1 == "debug" ]]
+then
+	odin run ./src -collection:src=src -debug
+	exit 0
+fi
+
 odin build ./src -collection:src=src
 
 

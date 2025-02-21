@@ -28,6 +28,17 @@ default_shape :: proc() -> Shape {
 	return Shape{utils.matrix4_identity(), light.material(), sphere(), rays.Ray{}, nil}
 }
 
+new_shape :: proc() -> ^Shape {
+	ptr := new(Shape)
+	ptr.transform = utils.matrix4_identity()
+	ptr.material = light.material()
+	ptr.shape = sphere()
+	ptr.ray = rays.Ray{}
+	ptr.parent = nil
+
+	return ptr
+}
+
 set_transform :: proc(s: ^Shape, t: matrix[4,4]f64) {
 	s.transform = t
 }

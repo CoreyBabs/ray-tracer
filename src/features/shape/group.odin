@@ -24,6 +24,21 @@ free_group :: proc(g: ^Group) {
 	delete(g.shapes)
 } 
 
+
+free_shape :: proc(s: ^Shape) {
+	#partial switch &t in s.shape {
+	case Group:
+		for i := 0; i < len(t.shapes); i+= 1 {
+			free_shape(t.shapes[i])
+		}
+
+		delete(t.shapes)
+	case:
+		free(&t)
+	}
+}
+
+// TODO: Nested Groups are not working
 add_shape_to_group :: proc(g, s: ^Shape) {
 	gr := &g.shape.(Group)
 	append(&gr.shapes, s)

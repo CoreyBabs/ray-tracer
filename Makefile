@@ -3,6 +3,9 @@ all: default
 test:
 	./build.sh test
 
+debug:
+	./build.sh debug
+
 default:
 	./build.sh
 

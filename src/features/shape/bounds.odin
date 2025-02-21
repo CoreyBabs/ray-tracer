@@ -28,7 +28,7 @@ upper_bounds_limit :: proc() -> tuples.Tuple {
 }
 
 shape_bounds :: proc(s: ^Shape) -> Bounds {
-	switch &t in s.shape {
+	switch &t in &s.shape {
 	case Sphere:
 		return bounds(tuples.point(-1, -1, -1), tuples.point(1, 1, 1))
 	case Plane:
@@ -42,7 +42,7 @@ shape_bounds :: proc(s: ^Shape) -> Bounds {
 	case Group:
 		return group_bounds(&t)
 	case:
-		panic("Unknown shape type. %v")
+		panic("Unknown shape type.")
 	}
 }
 
@@ -52,7 +52,9 @@ group_bounds :: proc(g: ^Group) -> Bounds {
 
 	points := make([]tuples.Tuple, 8, context.allocator)
 	defer delete(points)
-	for s in g.shapes {
+
+	for i := 0; i < len(g.shapes); i+=1 {
+		s := g.shapes[i]
 		b := shape_bounds(s)
 		points[0] = s.transform * b.min
 		points[1] = s.transform * tuples.point(b.min.x, b.min.y, b.max.z)
