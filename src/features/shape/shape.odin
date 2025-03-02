@@ -14,6 +14,7 @@ ShapeType :: union {
 	Cylinder,
 	Cone,
 	Group,
+	Triangle
 }
 
 Shape :: struct {
@@ -71,6 +72,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 		shape_normal = cone_normal_at(&t, obj_p)
 	case Group:
 		shape_normal = group_normal_at(&t, obj_p)
+	case Triangle:
+		shape_normal = triangle_normal_at(&t, obj_p)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -96,6 +99,8 @@ intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 		return cone_intersect(s, &s.ray)
 	case Group:
 		return group_intersect(s, &s.ray)
+	case Triangle:
+		return triangle_intersect(s, &s.ray)
 	case:
 		panic("Unknown shape type. %v")
 	}
@@ -127,6 +132,8 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return cone_equals(&s1.shape.(Cone), &s2.shape.(Cone))
 	case Group:
 		return group_equals(&s1.shape.(Group), &s2.shape.(Group))
+	case Triangle:
+		return triangle_equals(&s1.shape.(Triangle), &s2.shape.(Triangle))
 	case:
 		panic("Unknown shape type.")
 	}

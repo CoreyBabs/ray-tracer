@@ -20,6 +20,13 @@ group_shape :: proc() -> Shape {
 	return s
 }
 
+new_group_shape :: proc() -> ^Shape {
+	s := new_shape()
+	g := group()
+	set_shape(s, g)
+	return s
+}
+
 free_group :: proc(g: ^Group) {
 	delete(g.shapes)
 } 
