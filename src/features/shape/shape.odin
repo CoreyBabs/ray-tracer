@@ -14,7 +14,8 @@ ShapeType :: union {
 	Cylinder,
 	Cone,
 	Group,
-	Triangle
+	Triangle,
+	SmoothTriangle,
 }
 
 Shape :: struct {
@@ -56,7 +57,7 @@ set_parent :: proc(s, g: ^Shape) {
 	s.parent = g
 }
 
-normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
+normal_at :: proc(s: ^Shape, p: tuples.Tuple, u: f64 = 0, v: f64 = 0) -> tuples.Tuple {
 	obj_p := world_to_object(s, p)
 	shape_normal: tuples.Tuple
 	switch &t in s.shape {
@@ -74,6 +75,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple) -> tuples.Tuple {
 		shape_normal = group_normal_at(&t, obj_p)
 	case Triangle:
 		shape_normal = triangle_normal_at(&t, obj_p)
+	case SmoothTriangle:
+		shape_normal = smooth_triangle_normal_at(&t, obj_p, u, v)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -101,6 +104,8 @@ intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 		return group_intersect(s, &s.ray)
 	case Triangle:
 		return triangle_intersect(s, &s.ray)
+	case SmoothTriangle:
+		return smooth_triangle_intersect(s, &s.ray)
 	case:
 		panic("Unknown shape type. %v")
 	}
@@ -134,6 +139,8 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return group_equals(&s1.shape.(Group), &s2.shape.(Group))
 	case Triangle:
 		return triangle_equals(&s1.shape.(Triangle), &s2.shape.(Triangle))
+	case SmoothTriangle:
+		return smooth_triangle_equals(&s1.shape.(SmoothTriangle), &s2.shape.(SmoothTriangle))
 	case:
 		panic("Unknown shape type.")
 	}

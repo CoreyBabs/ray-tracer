@@ -23,7 +23,7 @@ Precompute :: struct {
 prepare_computation :: proc(intersection: ^Intersection, ray: ^rays.Ray, all_intersections: ^[dynamic]Intersection = nil) -> Precompute {
 	point := rays.position(ray, intersection.t)
 	eyev := -ray.direction
-	inside, normalv := is_inside(shape.normal_at(&intersection.shape, point), eyev)
+	inside, normalv := is_inside(shape.normal_at(&intersection.shape, point, intersection.u, intersection.v), eyev)
 	over_point := point + tuples.scalar_multiply(normalv, utils.EPS)
 	under_point := point - tuples.scalar_multiply(normalv, utils.EPS)
 	reflectv := tuples.reflect(ray.direction, normalv)

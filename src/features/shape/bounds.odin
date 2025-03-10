@@ -42,7 +42,9 @@ shape_bounds :: proc(s: ^Shape) -> Bounds {
 	case Group:
 		return group_bounds(&t)
 	case Triangle:
-		return triangle_bounds(&t)
+		return triangle_bounds(t.p1, t.p2, t.p3)
+	case SmoothTriangle:
+		return triangle_bounds(t.p1, t.p2, t.p3)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -93,14 +95,14 @@ bounds_intersect :: proc(b: ^Bounds, ray: ^rays.Ray) -> bool {
 }
 
 @(private)
-triangle_bounds :: proc(t: ^Triangle) -> Bounds {
-	minx := min(t.p1.x, t.p2.x, t.p3.x)
-	miny := min(t.p1.y, t.p2.y, t.p3.y)
-	minz := min(t.p1.z, t.p2.z, t.p3.z)
+triangle_bounds :: proc(p1, p2, p3: tuples.Tuple) -> Bounds {
+	minx := min(p1.x, p2.x, p3.x)
+	miny := min(p1.y, p2.y, p3.y)
+	minz := min(p1.z, p2.z, p3.z)
 
-	maxx := max(t.p1.x, t.p2.x, t.p3.x)
-	maxy := max(t.p1.y, t.p2.y, t.p3.y)
-	maxz := max(t.p1.z, t.p2.z, t.p3.z)
+	maxx := max(p1.x, p2.x, p3.x)
+	maxy := max(p1.y, p2.y, p3.y)
+	maxz := max(p1.z, p2.z, p3.z)
 
 	return Bounds{tuples.point(minx, miny, minz), tuples.point(maxx, maxy, maxz)}
 }

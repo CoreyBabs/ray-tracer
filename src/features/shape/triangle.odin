@@ -49,7 +49,7 @@ triangle_normal_at :: proc(t: ^Triangle, p: tuples.Tuple) -> tuples.Tuple {
 
 @(private)
 triangle_intersect :: proc(s: ^Shape, r: ^rays.Ray) -> map[^Shape][]f64 {
-	t := s.shape.(Triangle)
+	t := &s.shape.(Triangle)
 	c := tuples.cross(r.direction, t.e2)
 	d := tuples.dot(t.e1, c)
 
@@ -70,7 +70,6 @@ triangle_intersect :: proc(s: ^Shape, r: ^rays.Ray) -> map[^Shape][]f64 {
 
 	m := make(map[^Shape][]f64, 1, context.allocator)
 	ts := make([]f64, 1, context.allocator)
-	// defer delete(ts)
 	ts[0] = f * tuples.dot(t.e2, oc)
 	m[s] = ts
 

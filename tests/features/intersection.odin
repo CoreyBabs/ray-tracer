@@ -407,3 +407,12 @@ schlick_small_angle :: proc(t: ^testing.T) {
 
 	testing.expectf(t, utils.fp_equals(reflectance, 0.48873), "Reflectance is incorrect. Got %v, Expected 0.48873")
 }
+
+@(test)
+intersection_uv :: proc(t: ^testing.T) {
+	s := shape.triangle_shape(tuples.point(0, 1, 0), tuples.point(-1, 0, 0), tuples.point(1, 0, 0))
+	i := intersection.intersection_with_uv(3.5, s, 0.2, 0.4)
+
+	testing.expect(t, utils.fp_equals(i.u, 0.2), "Intersection u value is not correct.")
+	testing.expect(t, utils.fp_equals(i.v, 0.4), "Intersection v value is not correct.")
+}

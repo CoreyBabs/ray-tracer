@@ -9,12 +9,18 @@ import "src:features/tuples"
 import utils "src:utilities"
 
 Intersection :: struct {
+	shape: shape.Shape,
 	t: f64,
-	shape: shape.Shape
+	u: f64,
+	v: f64,
 }
 
 intersection :: proc(t: f64, shape: shape.Shape) -> Intersection {
-	return Intersection{t, shape}
+	return Intersection{shape, t, 0, 0}
+}
+
+intersection_with_uv :: proc(t: f64, shape: shape.Shape, u, v: f64) -> Intersection {
+	return Intersection{shape, t, u, v}
 }
 
 intersection_equals :: proc(i1, i2: ^Intersection) -> bool {
@@ -37,12 +43,17 @@ aggregate_ts :: proc(s: ^shape.Shape, ts: ..f64) -> [dynamic]Intersection {
 	return aggregate
 }
 
-aggregate_and_sort_ts :: proc(m: ^map[^shape.Shape][]f64) -> [dynamic]Intersection {
+aggregate_and_sort_ts :: proc(m: ^map[^shape.Shape][]f64, r: ^rays.Ray) -> [dynamic]Intersection {
 	aggregate: [dynamic]Intersection
 
 	for key, values in m {
 		for t in values {
-			append(&aggregate, intersection(t, key^))
+			#partial switch &s in key.shape {
+			case shape.SmoothTriangle: 
+				u, v := shape.smooth_triangle_get_uv(&key.shape.(shape.SmoothTriangle), r)
+				append(&aggregate, intersection_with_uv(t, key^, u, v))
+			case: append(&aggregate, intersection(t, key^))
+			}
 		}
 	}
 
@@ -59,7 +70,7 @@ intersect :: proc(s: ^shape.Shape, ray: ^rays.Ray) -> [dynamic]Intersection {
 		return nil
 	}
 
-	return aggregate_and_sort_ts(&ts)
+	return aggregate_and_sort_ts(&ts, ray)
 }
 
 hit :: proc(intersections: [dynamic]Intersection) -> (Intersection, bool) {
