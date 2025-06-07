@@ -41,6 +41,10 @@ free_shape :: proc(s: ^Shape) {
 
 		delete(t.shapes)
 		free(s)
+	case Csg:
+		free(t.left)
+		free(t.right)
+		free(s)
 	case:
 		free(s)
 	}
@@ -65,6 +69,17 @@ group_equals :: proc(g1, g2: ^Group) -> bool {
 	}
 
 	return true
+}
+
+@(private)
+group_includes :: proc(g: ^Group, s: ^Shape) -> bool {
+	for c in g.shapes {
+		if shape_includes(c, s) {
+			return true
+		}
+	}
+
+	return false
 }
 
 group_intersect :: proc(s: ^Shape, r: ^rays.Ray) -> map[^Shape][]f64 {

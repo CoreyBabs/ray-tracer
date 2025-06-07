@@ -16,6 +16,7 @@ ShapeType :: union {
 	Group,
 	Triangle,
 	SmoothTriangle,
+	Csg
 }
 
 Shape :: struct {
@@ -77,6 +78,8 @@ normal_at :: proc(s: ^Shape, p: tuples.Tuple, u: f64 = 0, v: f64 = 0) -> tuples.
 		shape_normal = triangle_normal_at(&t, obj_p)
 	case SmoothTriangle:
 		shape_normal = smooth_triangle_normal_at(&t, obj_p, u, v)
+	case Csg:
+		shape_normal = csg_normal_at(&t, obj_p)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -106,6 +109,8 @@ intersect :: proc(s: ^Shape, ray: ^rays.Ray) -> map[^Shape][]f64 {
 		return triangle_intersect(s, &s.ray)
 	case SmoothTriangle:
 		return smooth_triangle_intersect(s, &s.ray)
+	case Csg:
+		return csg_intersect(s, &s.ray)
 	case:
 		panic("Unknown shape type. %v")
 	}
@@ -141,9 +146,20 @@ shape_equals :: proc(s1, s2: ^Shape) -> bool {
 		return triangle_equals(&s1.shape.(Triangle), &s2.shape.(Triangle))
 	case SmoothTriangle:
 		return smooth_triangle_equals(&s1.shape.(SmoothTriangle), &s2.shape.(SmoothTriangle))
+	case Csg:
+		return csg_equals(&s1.shape.(Csg), &s2.shape.(Csg))
 	case:
-		panic("Unknown shape type.")
+		return false
 	}
+}
+
+shape_includes :: proc(s1, s2: ^Shape) -> bool {
+	#partial switch &t in s1.shape {
+	case Group:	return group_includes(&t, s2)
+	case Csg: return csg_includes(&t, s2)
+	case: return shape_equals(s1, s2)
+	}
+
 }
 
 shape_search :: proc(shapes: ^[dynamic]^Shape, value: ^Shape) -> (int, bool) {

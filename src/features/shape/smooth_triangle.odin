@@ -22,11 +22,21 @@ smooth_triangle :: proc(p1, p2, p3, n1, n2, n3: tuples.Tuple) -> SmoothTriangle 
 	return SmoothTriangle{p1, p2, p3, n1, n2, n3, e1, e2}
 }
 
+new_smooth_triangle_shape :: proc(p1, p2, p3, n1, n2, n3: tuples.Tuple) -> ^Shape {
+	s := new_shape()
+	t := smooth_triangle(p1, p2, p3, n1, n2, n3)
+	set_shape(s, t)
+	return s
+}
+
 @(private)
 smooth_triangle_equals :: proc(t1, t2: ^SmoothTriangle) -> bool {
 	return tuples.tuple_equals(t1.p1, t2.p1) &&
 		tuples.tuple_equals(t1.p2, t2.p2) &&
-		tuples.tuple_equals(t1.p3, t2.p3)
+		tuples.tuple_equals(t1.p3, t2.p3) &&
+		tuples.tuple_equals(t1.n1, t2.n1) &&
+		tuples.tuple_equals(t1.n2, t2.n2) &&
+		tuples.tuple_equals(t1.n3, t2.n3)
 }
 
 @(private)

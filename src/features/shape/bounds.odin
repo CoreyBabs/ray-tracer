@@ -45,6 +45,8 @@ shape_bounds :: proc(s: ^Shape) -> Bounds {
 		return triangle_bounds(t.p1, t.p2, t.p3)
 	case SmoothTriangle:
 		return triangle_bounds(t.p1, t.p2, t.p3)
+	case Csg:
+		return csg_bounds(&t)
 	case:
 		panic("Unknown shape type.")
 	}
@@ -104,5 +106,19 @@ triangle_bounds :: proc(p1, p2, p3: tuples.Tuple) -> Bounds {
 	maxy := max(p1.y, p2.y, p3.y)
 	maxz := max(p1.z, p2.z, p3.z)
 
+	return Bounds{tuples.point(minx, miny, minz), tuples.point(maxx, maxy, maxz)}
+}
+
+csg_bounds :: proc(c: ^Csg) -> Bounds {
+	left := shape_bounds(c.left)
+	right := shape_bounds(c.right)
+
+	minx := min(left.min.x, right.min.x)
+	miny := min(left.min.y, right.min.y)
+	minz := min(left.min.z, right.min.z)
+
+	maxx := max(left.max.x, right.max.x)
+	maxy := max(left.max.y, right.max.y)
+	maxz := max(left.max.z, right.max.z)
 	return Bounds{tuples.point(minx, miny, minz), tuples.point(maxx, maxy, maxz)}
 }

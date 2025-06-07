@@ -33,7 +33,7 @@ main :: proc() {
 	//
 	// context.assertion_failure_proc = debug_trace_assertion_failure_proc
 
-	side_projects.teapot_scene()
+	side_projects.penguin_scene()
 }
 
 global_trace_ctx: trace.Context

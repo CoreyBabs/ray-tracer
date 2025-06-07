@@ -4,3 +4,4 @@ odinfmt.json
 build
 tests/tests
 /images/
+/object_files/
